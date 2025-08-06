@@ -14,7 +14,147 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      bookings: {
+        Row: {
+          content_id: string | null
+          created_at: string
+          id: string
+          scheduled_date: string
+          scheduled_end_time: string
+          scheduled_start_time: string
+          screen_id: string | null
+          status: string | null
+          stripe_session_id: string | null
+          total_amount: number
+          updated_at: string
+          user_id: string | null
+        }
+        Insert: {
+          content_id?: string | null
+          created_at?: string
+          id?: string
+          scheduled_date: string
+          scheduled_end_time: string
+          scheduled_start_time: string
+          screen_id?: string | null
+          status?: string | null
+          stripe_session_id?: string | null
+          total_amount: number
+          updated_at?: string
+          user_id?: string | null
+        }
+        Update: {
+          content_id?: string | null
+          created_at?: string
+          id?: string
+          scheduled_date?: string
+          scheduled_end_time?: string
+          scheduled_start_time?: string
+          screen_id?: string | null
+          status?: string | null
+          stripe_session_id?: string | null
+          total_amount?: number
+          updated_at?: string
+          user_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "bookings_content_id_fkey"
+            columns: ["content_id"]
+            isOneToOne: false
+            referencedRelation: "content_uploads"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "bookings_screen_id_fkey"
+            columns: ["screen_id"]
+            isOneToOne: false
+            referencedRelation: "screens"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      content_uploads: {
+        Row: {
+          created_at: string
+          file_name: string
+          file_size: number | null
+          file_type: string
+          file_url: string
+          id: string
+          user_id: string | null
+        }
+        Insert: {
+          created_at?: string
+          file_name: string
+          file_size?: number | null
+          file_type: string
+          file_url: string
+          id?: string
+          user_id?: string | null
+        }
+        Update: {
+          created_at?: string
+          file_name?: string
+          file_size?: number | null
+          file_type?: string
+          file_url?: string
+          id?: string
+          user_id?: string | null
+        }
+        Relationships: []
+      }
+      screens: {
+        Row: {
+          address: string | null
+          availability_end: string | null
+          availability_start: string | null
+          city: string | null
+          created_at: string
+          id: string
+          is_active: boolean | null
+          location_lat: number | null
+          location_lng: number | null
+          owner_id: string | null
+          price_per_hour: number | null
+          qr_code_url: string | null
+          screen_name: string | null
+          updated_at: string
+        }
+        Insert: {
+          address?: string | null
+          availability_end?: string | null
+          availability_start?: string | null
+          city?: string | null
+          created_at?: string
+          id?: string
+          is_active?: boolean | null
+          location_lat?: number | null
+          location_lng?: number | null
+          owner_id?: string | null
+          price_per_hour?: number | null
+          qr_code_url?: string | null
+          screen_name?: string | null
+          updated_at?: string
+        }
+        Update: {
+          address?: string | null
+          availability_end?: string | null
+          availability_start?: string | null
+          city?: string | null
+          created_at?: string
+          id?: string
+          is_active?: boolean | null
+          location_lat?: number | null
+          location_lng?: number | null
+          owner_id?: string | null
+          price_per_hour?: number | null
+          qr_code_url?: string | null
+          screen_name?: string | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
