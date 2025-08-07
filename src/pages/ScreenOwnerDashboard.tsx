@@ -31,6 +31,7 @@ import { DeviceMonitoring } from "@/components/screen-owner/DeviceMonitoring";
 import { ScreenNetworkManagement } from "@/components/screen-owner/ScreenNetworkManagement";
 import { ContentApprovalWorkflows } from "@/components/screen-owner/ContentApprovalWorkflows";
 import { PayoutManagement } from "@/components/screen-owner/PayoutManagement";
+import { AvailabilityManager } from "@/components/screen-owner/AvailabilityManager";
 
 interface ScreenData {
   id: string;
@@ -285,12 +286,13 @@ const ScreenOwnerDashboard = () => {
 
         {/* Main Content Tabs */}
         <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
-          <TabsList className="grid w-full grid-cols-6">
+          <TabsList className="grid w-full grid-cols-7">
             <TabsTrigger value="overview">Overview</TabsTrigger>
             <TabsTrigger value="revenue">Revenue</TabsTrigger>
             <TabsTrigger value="monitoring">Monitoring</TabsTrigger>
             <TabsTrigger value="network">Network</TabsTrigger>
             <TabsTrigger value="content">Content</TabsTrigger>
+            <TabsTrigger value="availability">Availability</TabsTrigger>
             <TabsTrigger value="payouts">Payouts</TabsTrigger>
           </TabsList>
 
@@ -364,6 +366,18 @@ const ScreenOwnerDashboard = () => {
 
           <TabsContent value="content">
             <ContentApprovalWorkflows screens={screens} />
+          </TabsContent>
+
+          <TabsContent value="availability">
+            {screens.length > 0 ? (
+              <AvailabilityManager screenId={screens[0].id} />
+            ) : (
+              <Card>
+                <CardContent className="p-6 text-center">
+                  <p className="text-muted-foreground">Register a screen to manage availability</p>
+                </CardContent>
+              </Card>
+            )}
           </TabsContent>
 
           <TabsContent value="payouts">

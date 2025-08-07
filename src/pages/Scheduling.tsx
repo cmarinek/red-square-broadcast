@@ -1,16 +1,18 @@
 import { useState, useEffect } from "react";
 import { useParams, useNavigate, useSearchParams } from "react-router-dom";
-import { Calendar, Clock, DollarSign, CheckCircle } from "lucide-react";
+import { Calendar, Clock, DollarSign, CheckCircle, AlertTriangle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Calendar as CalendarComponent } from "@/components/ui/calendar";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Alert, AlertDescription } from "@/components/ui/alert";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { Navigation } from "@/components/Navigation";
 import { format, addDays, isSameDay } from "date-fns";
+import { AvailabilityCalendar } from "@/components/booking/AvailabilityCalendar";
+import { useAvailability } from "@/hooks/useAvailability";
 
 interface Screen {
   id: string;
@@ -39,6 +41,7 @@ export default function Scheduling() {
   const [selectedStartTime, setSelectedStartTime] = useState<string>("");
   const [duration, setDuration] = useState<number>(1);
   const [loading, setLoading] = useState(true);
+  const { checkConflict } = useAvailability(screenId, selectedDate);
 
   useEffect(() => {
     fetchData();
@@ -99,6 +102,16 @@ export default function Scheduling() {
       return;
     }
 
+    // Check for conflicts before proceeding
+    if (checkConflict(selectedStartTime, duration)) {
+      toast({
+        title: "Time slot unavailable",
+        description: "The selected time slot conflicts with existing bookings. Please choose a different time.",
+        variant: "destructive"
+      });
+      return;
+    }
+
     try {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) {
@@ -113,6 +126,27 @@ export default function Scheduling() {
       const startTime = selectedStartTime;
       const endHour = parseInt(startTime.split(':')[0]) + duration;
       const endTime = `${endHour.toString().padStart(2, '0')}:00`;
+
+      // Double-check availability before creating booking
+      const { data: existingBookings, error: checkError } = await supabase
+        .from('bookings')
+        .select('id')
+        .eq('screen_id', screen.id)
+        .eq('scheduled_date', format(selectedDate, 'yyyy-MM-dd'))
+        .in('status', ['confirmed', 'paid', 'active'])
+        .gte('scheduled_end_time', startTime)
+        .lte('scheduled_start_time', endTime);
+
+      if (checkError) throw checkError;
+
+      if (existingBookings && existingBookings.length > 0) {
+        toast({
+          title: "Time slot no longer available",
+          description: "Someone just booked this time slot. Please choose a different time.",
+          variant: "destructive"
+        });
+        return;
+      }
 
       // Create booking record
       const { data: booking, error: bookingError } = await supabase
@@ -229,88 +263,73 @@ export default function Scheduling() {
                 </CardContent>
               </Card>
 
-              {/* Date Selection */}
-              <Card>
-                <CardHeader>
-                  <CardTitle className="flex items-center gap-2">
-                    <Calendar className="h-5 w-5" />
-                    Select Date
-                  </CardTitle>
-                  <CardDescription>
-                    Choose the date for your broadcast
-                  </CardDescription>
-                </CardHeader>
-                <CardContent>
-                  <CalendarComponent
-                    mode="single"
-                    selected={selectedDate}
-                    onSelect={setSelectedDate}
-                    disabled={(date) => date < new Date() || date > addDays(new Date(), 30)}
-                    className="rounded-md border"
-                  />
-                </CardContent>
-              </Card>
-
-              {/* Time Selection */}
+              {/* Duration Selection */}
               <Card>
                 <CardHeader>
                   <CardTitle className="flex items-center gap-2">
                     <Clock className="h-5 w-5" />
-                    Select Time & Duration
+                    Duration
                   </CardTitle>
                   <CardDescription>
-                    Available hours: {screen.availability_start} - {screen.availability_end}
+                    Select how long you want to broadcast
                   </CardDescription>
                 </CardHeader>
-                <CardContent className="space-y-4">
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div>
-                      <label className="text-sm font-medium mb-2 block">Start Time</label>
-                      <Select value={selectedStartTime} onValueChange={setSelectedStartTime}>
-                        <SelectTrigger>
-                          <SelectValue placeholder="Select start time" />
-                        </SelectTrigger>
-                        <SelectContent>
-                          {timeSlots.map((time) => (
-                            <SelectItem key={time} value={time}>
-                              {time}
-                            </SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
-                    </div>
-                    
-                    <div>
-                      <label className="text-sm font-medium mb-2 block">Duration (hours)</label>
-                      <Select value={duration.toString()} onValueChange={(value) => setDuration(parseInt(value))}>
-                        <SelectTrigger>
-                          <SelectValue />
-                        </SelectTrigger>
-                        <SelectContent>
-                          {[1, 2, 3, 4, 6, 8, 12].map((hours) => (
-                            <SelectItem key={hours} value={hours.toString()}>
-                              {hours} hour{hours > 1 ? 's' : ''}
-                            </SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
-                    </div>
-                  </div>
+                <CardContent>
+                  <Select value={duration.toString()} onValueChange={(value) => setDuration(parseInt(value))}>
+                    <SelectTrigger>
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {[1, 2, 3, 4, 6, 8, 12].map((hours) => (
+                        <SelectItem key={hours} value={hours.toString()}>
+                          {hours} hour{hours > 1 ? 's' : ''}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </CardContent>
+              </Card>
 
-                  {selectedStartTime && (
-                    <div className="bg-muted p-4 rounded-lg">
+              {/* Enhanced Calendar with Availability */}
+              <AvailabilityCalendar
+                screenId={screenId!}
+                selectedDate={selectedDate}
+                onDateSelect={setSelectedDate}
+                onTimeSelect={setSelectedStartTime}
+                selectedTime={selectedStartTime}
+                duration={duration}
+              />
+
+              {/* Conflict Warning */}
+              {selectedStartTime && selectedDate && checkConflict(selectedStartTime, duration) && (
+                <Alert variant="destructive">
+                  <AlertTriangle className="h-4 w-4" />
+                  <AlertDescription>
+                    The selected time slot conflicts with existing bookings. Please choose a different time.
+                  </AlertDescription>
+                </Alert>
+              )}
+
+              {/* Booking Summary */}
+              {selectedStartTime && selectedDate && !checkConflict(selectedStartTime, duration) && (
+                <Card>
+                  <CardHeader>
+                    <CardTitle className="text-green-600">Booking Preview</CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="bg-green-50 dark:bg-green-900/20 p-4 rounded-lg">
                       <p className="text-sm">
                         <strong>Broadcast time:</strong> {selectedStartTime} - {
                           `${(parseInt(selectedStartTime.split(':')[0]) + duration).toString().padStart(2, '0')}:00`
                         }
                       </p>
                       <p className="text-sm text-muted-foreground mt-1">
-                        {selectedDate ? format(selectedDate, 'EEEE, MMMM d, yyyy') : 'No date selected'}
+                        {format(selectedDate, 'EEEE, MMMM d, yyyy')}
                       </p>
                     </div>
-                  )}
-                </CardContent>
-              </Card>
+                  </CardContent>
+                </Card>
+              )}
             </div>
 
             {/* Booking Summary */}
@@ -378,7 +397,7 @@ export default function Scheduling() {
                   <Button 
                     className="w-full mt-6"
                     onClick={proceedToPayment}
-                    disabled={!selectedDate || !selectedStartTime}
+                    disabled={!selectedDate || !selectedStartTime || (selectedStartTime && checkConflict(selectedStartTime, duration))}
                   >
                     Proceed to Payment
                   </Button>
