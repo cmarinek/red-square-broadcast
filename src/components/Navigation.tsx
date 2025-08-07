@@ -43,7 +43,7 @@ export const Navigation = () => {
                   <a href="/discover">Find Screens</a>
                 </Button>
                 <Button variant="outline" asChild>
-                  <a href="/register-screen">Register Screen</a>
+                  <a href="/dashboard">My Screens</a>
                 </Button>
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>
