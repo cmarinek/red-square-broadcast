@@ -477,9 +477,9 @@ export const ScreenNetworkManagement = ({ screens, onRefresh }: ScreenNetworkMan
                 >
                   <div className="flex items-start justify-between mb-2">
                     <div className="flex items-start gap-2">
-                      <Checkbox
+                       <Checkbox
                         checked={selectedScreens.includes(screen.id)}
-                        onChange={() => {}}
+                        onCheckedChange={() => {}}
                         className="mt-1"
                       />
                       <div>
@@ -528,10 +528,10 @@ export const ScreenNetworkManagement = ({ screens, onRefresh }: ScreenNetworkMan
                     );
                   }}
                 >
-                  <Checkbox
-                    checked={selectedScreens.includes(screen.id)}
-                    onChange={() => {}}
-                  />
+                        <Checkbox
+                          checked={selectedScreens.includes(screen.id)}
+                          onCheckedChange={() => {}}
+                        />
                   <Monitor className="h-5 w-5 text-muted-foreground" />
                   <div className="flex-1">
                     <div className="flex items-center justify-between">

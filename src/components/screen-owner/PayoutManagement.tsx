@@ -154,7 +154,7 @@ export const PayoutManagement = ({ screens }: PayoutManagementProps) => {
       console.error("Error requesting payout:", error);
       toast({
         title: "Error requesting payout",
-        description: error.message || "Please try again.",
+        description: (error as any)?.message || "Please try again.",
         variant: "destructive"
       });
     } finally {
