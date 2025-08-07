@@ -37,6 +37,10 @@ import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { Layout } from "@/components/Layout";
 import { useAuth } from "@/context/AuthContext";
+import { AdvancedAnalyticsDashboard } from "@/components/broadcaster/AdvancedAnalyticsDashboard";
+import { ContentSchedulingAutomation } from "@/components/broadcaster/ContentSchedulingAutomation";
+import { AudienceTargeting } from "@/components/broadcaster/AudienceTargeting";
+import { ABTestingTools } from "@/components/broadcaster/ABTestingTools";
 import { format, isAfter, isBefore, addDays } from "date-fns";
 
 interface BookingData {
@@ -64,9 +68,12 @@ const BroadcasterDashboard = () => {
   const { toast } = useToast();
   const { user } = useAuth();
   const [bookings, setBookings] = useState<BookingData[]>([]);
+  const [contentUploads, setContentUploads] = useState<any[]>([]);
+  const [screens, setScreens] = useState<any[]>([]);
+  const [audienceSegments, setAudienceSegments] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState("");
-  const [filterTab, setFilterTab] = useState("all");
+  const [filterTab, setFilterTab] = useState("overview");
   const [stats, setStats] = useState({
     totalBookings: 0,
     activeBookings: 0,
@@ -82,6 +89,34 @@ const BroadcasterDashboard = () => {
       return;
     }
     fetchUserBookings();
+    fetchAdditionalData();
+  }, [user, navigate]);
+
+  const fetchAdditionalData = async () => {
+    try {
+      // Fetch content uploads
+      const { data: contentData } = await supabase
+        .from('content_uploads')
+        .select('*')
+        .eq('user_id', user.id);
+      setContentUploads(contentData || []);
+
+      // Fetch screens (public)
+      const { data: screensData } = await supabase
+        .from('screens')
+        .select('*')
+        .eq('is_active', true);
+      setScreens(screensData || []);
+
+      // Fetch audience segments
+      const { data: segmentsData } = await supabase
+        .from('audience_segments')
+        .select('*')
+        .eq('user_id', user.id);
+      setAudienceSegments(segmentsData || []);
+    } catch (error) {
+      console.error("Error fetching additional data:", error);
+    }
   }, [user, navigate]);
 
   const fetchUserBookings = async () => {
@@ -378,27 +413,35 @@ const BroadcasterDashboard = () => {
             </div>
             
             <Tabs value={filterTab} onValueChange={setFilterTab} className="mt-4">
-              <TabsList className="grid w-full grid-cols-4 lg:w-auto lg:grid-cols-4">
-                <TabsTrigger value="all">All ({bookings.length})</TabsTrigger>
-                <TabsTrigger value="active">Active ({stats.activeBookings})</TabsTrigger>
-                <TabsTrigger value="upcoming">Upcoming ({stats.upcomingBookings})</TabsTrigger>
-                <TabsTrigger value="completed">Completed</TabsTrigger>
+              <TabsList className="grid w-full grid-cols-6 lg:w-auto">
+                <TabsTrigger value="overview">Overview</TabsTrigger>
+                <TabsTrigger value="analytics">Analytics</TabsTrigger>
+                <TabsTrigger value="scheduling">Scheduling</TabsTrigger>
+                <TabsTrigger value="targeting">Targeting</TabsTrigger>
+                <TabsTrigger value="testing">A/B Testing</TabsTrigger>
+                <TabsTrigger value="campaigns">Campaigns</TabsTrigger>
               </TabsList>
             </Tabs>
           </CardHeader>
 
           <CardContent className="p-0">
             <Tabs value={filterTab} className="w-full">
-              <TabsContent value="all" className="mt-0">
+              <TabsContent value="overview" className="mt-0">
                 {renderCampaignsList(filterBookings(bookings))}
               </TabsContent>
-              <TabsContent value="active" className="mt-0">
-                {renderCampaignsList(filterBookings(bookings))}
+              <TabsContent value="analytics" className="mt-6">
+                <AdvancedAnalyticsDashboard bookings={bookings} />
               </TabsContent>
-              <TabsContent value="upcoming" className="mt-0">
-                {renderCampaignsList(filterBookings(bookings))}
+              <TabsContent value="scheduling" className="mt-6">
+                <ContentSchedulingAutomation contentUploads={contentUploads} screens={screens} />
               </TabsContent>
-              <TabsContent value="completed" className="mt-0">
+              <TabsContent value="targeting" className="mt-6">
+                <AudienceTargeting screens={screens} />
+              </TabsContent>
+              <TabsContent value="testing" className="mt-6">
+                <ABTestingTools contentUploads={contentUploads} screens={screens} audienceSegments={audienceSegments} />
+              </TabsContent>
+              <TabsContent value="campaigns" className="mt-0">
                 {renderCampaignsList(filterBookings(bookings))}
               </TabsContent>
             </Tabs>
