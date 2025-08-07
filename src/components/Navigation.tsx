@@ -15,7 +15,7 @@ import {
 export const Navigation = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const { user, signOut } = useAuth();
-  const { hasScreens, loading: rolesLoading } = useUserRoles();
+  const { isBroadcaster, isScreenOwner, isAdmin, loading: rolesLoading } = useUserRoles();
   return <nav className="fixed top-0 left-0 right-0 z-50 bg-background/80 backdrop-blur-md border-b border-border">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between h-16 items-center">
@@ -30,15 +30,22 @@ export const Navigation = () => {
           <div className="hidden md:flex items-center space-x-4">
             {user ? (
               <>
-                <Button variant="outline" asChild>
-                  <Link to="/discover">Find Screens</Link>
-                </Button>
-                <Button variant="outline" asChild>
-                  <Link to="/my-campaigns">My Campaigns</Link>
-                </Button>
-                {hasScreens && (
+                {/* Broadcaster features */}
+                {(isBroadcaster() || isAdmin()) && (
+                  <>
+                    <Button variant="outline" asChild>
+                      <Link to="/discover">Find Screens</Link>
+                    </Button>
+                    <Button variant="outline" asChild>
+                      <Link to="/my-campaigns">My Campaigns</Link>
+                    </Button>
+                  </>
+                )}
+                
+                {/* Screen Owner features */}
+                {(isScreenOwner() || isAdmin()) && (
                   <Button variant="outline" asChild>
-                    <Link to="/dashboard">My Screens</Link>
+                    <Link to="/dashboard">Screen Dashboard</Link>
                   </Button>
                 )}
                 <DropdownMenu>
@@ -57,28 +64,34 @@ export const Navigation = () => {
                         Profile Settings
                       </Link>
                     </DropdownMenuItem>
-                    {!hasScreens && (
+                    
+                    {/* Screen Owner specific options */}
+                    {(isScreenOwner() || isAdmin()) && (
+                      <>
+                        <DropdownMenuItem asChild>
+                          <Link to="/register-screen" className="flex items-center">
+                            <Monitor className="w-4 h-4 mr-2" />
+                            Register New Screen
+                          </Link>
+                        </DropdownMenuItem>
+                        <DropdownMenuItem asChild>
+                          <Link to="/device-setup" className="flex items-center">
+                            <Settings className="w-4 h-4 mr-2" />
+                            Device Setup
+                          </Link>
+                        </DropdownMenuItem>
+                      </>
+                    )}
+                    
+                    {/* Broadcaster specific options */}
+                    {isBroadcaster() && !isScreenOwner() && !isAdmin() && (
                       <DropdownMenuItem asChild>
                         <Link to="/register-screen" className="flex items-center">
                           <Monitor className="w-4 h-4 mr-2" />
-                          Register Screen
+                          Become Screen Owner
                         </Link>
                       </DropdownMenuItem>
                     )}
-                    {hasScreens && (
-                      <DropdownMenuItem asChild>
-                        <Link to="/dashboard" className="flex items-center">
-                          <BarChart3 className="w-4 h-4 mr-2" />
-                          Screen Analytics
-                        </Link>
-                      </DropdownMenuItem>
-                    )}
-                    <DropdownMenuItem asChild>
-                      <Link to="/device-setup" className="flex items-center">
-                        <Settings className="w-4 h-4 mr-2" />
-                        Device Setup
-                      </Link>
-                    </DropdownMenuItem>
                     <DropdownMenuSeparator />
                     <DropdownMenuItem onClick={signOut}>
                       <LogOut className="w-4 h-4 mr-2" />
@@ -118,36 +131,51 @@ export const Navigation = () => {
             <div className="flex flex-col space-y-3">
               {user ? (
                 <>
-                  <Button variant="outline" asChild className="w-full justify-start">
-                    <Link to="/discover">Find Screens</Link>
-                  </Button>
-                  <Button variant="outline" asChild className="w-full justify-start">
-                    <Link to="/my-campaigns">My Campaigns</Link>
-                  </Button>
-                  {hasScreens && (
+                {/* Broadcaster features */}
+                {(isBroadcaster() || isAdmin()) && (
+                  <>
                     <Button variant="outline" asChild className="w-full justify-start">
-                      <Link to="/dashboard">My Screens</Link>
+                      <Link to="/discover">Find Screens</Link>
                     </Button>
-                  )}
-                  <Button variant="outline" asChild className="w-full justify-start">
-                    <Link to="/profile">Profile Settings</Link>
-                  </Button>
-                  {!hasScreens ? (
                     <Button variant="outline" asChild className="w-full justify-start">
-                      <Link to="/register-screen">Register Screen</Link>
+                      <Link to="/my-campaigns">My Campaigns</Link>
                     </Button>
-                  ) : (
-                    <Button variant="outline" asChild className="w-full justify-start">
-                      <Link to="/dashboard">Screen Analytics</Link>
-                    </Button>
-                  )}
+                  </>
+                )}
+                
+                {/* Screen Owner features */}
+                {(isScreenOwner() || isAdmin()) && (
                   <Button variant="outline" asChild className="w-full justify-start">
-                    <Link to="/device-setup">Device Setup</Link>
+                    <Link to="/dashboard">Screen Dashboard</Link>
                   </Button>
-                  <Button onClick={signOut} variant="outline" className="w-full justify-start">
-                    <LogOut className="w-4 h-4 mr-2" />
-                    Sign Out
+                )}
+                
+                <Button variant="outline" asChild className="w-full justify-start">
+                  <Link to="/profile">Profile Settings</Link>
+                </Button>
+                
+                {/* Role-specific options */}
+                {(isScreenOwner() || isAdmin()) && (
+                  <>
+                    <Button variant="outline" asChild className="w-full justify-start">
+                      <Link to="/register-screen">Register New Screen</Link>
+                    </Button>
+                    <Button variant="outline" asChild className="w-full justify-start">
+                      <Link to="/device-setup">Device Setup</Link>
+                    </Button>
+                  </>
+                )}
+                
+                {isBroadcaster() && !isScreenOwner() && !isAdmin() && (
+                  <Button variant="outline" asChild className="w-full justify-start">
+                    <Link to="/register-screen">Become Screen Owner</Link>
                   </Button>
+                )}
+                
+                <Button onClick={signOut} variant="outline" className="w-full justify-start">
+                  <LogOut className="w-4 h-4 mr-2" />
+                  Sign Out
+                </Button>
                 </>
               ) : (
                 <>

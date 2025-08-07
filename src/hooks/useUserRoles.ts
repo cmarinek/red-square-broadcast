@@ -52,30 +52,6 @@ export const useUserRoles = () => {
   const isScreenOwner = (): boolean => hasRole('screen_owner');
   const isAdmin = (): boolean => hasRole('admin');
 
-  // Check if user has screens (to determine if they should see screen owner features)
-  const [hasScreens, setHasScreens] = useState(false);
-  
-  useEffect(() => {
-    if (!user) return;
-    
-    const checkUserScreens = async () => {
-      try {
-        const { data, error } = await supabase
-          .from('screens')
-          .select('id')
-          .eq('owner_id', user.id)
-          .limit(1);
-
-        if (error) throw error;
-        setHasScreens((data?.length || 0) > 0);
-      } catch (error) {
-        console.error("Error checking user screens:", error);
-      }
-    };
-
-    checkUserScreens();
-  }, [user]);
-
   return {
     profile,
     loading,
@@ -83,7 +59,6 @@ export const useUserRoles = () => {
     isBroadcaster,
     isScreenOwner,
     isAdmin,
-    hasScreens,
     refetch: fetchUserProfile
   };
 };
