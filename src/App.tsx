@@ -7,6 +7,7 @@ import { AuthProvider } from "@/context/AuthContext";
 import Index from "./pages/Index";
 import NotFound from "./pages/NotFound";
 import Auth from "./pages/Auth";
+import ScreenRegistration from "./pages/ScreenRegistration";
 import ScreenDiscovery from "./pages/ScreenDiscovery";
 import ScreenDetails from "./pages/ScreenDetails";
 import ContentUpload from "./pages/ContentUpload";
@@ -28,6 +29,7 @@ const App = () => (
           <Routes>
             <Route path="/" element={<Index />} />
             <Route path="/auth" element={<Auth />} />
+            <Route path="/register-screen" element={<ScreenRegistration />} />
             <Route path="/how-it-works" element={<HowItWorksDetailed />} />
             <Route path="/production-plan" element={<ProductionPlan />} />
             <Route path="/discover" element={<ScreenDiscovery />} />

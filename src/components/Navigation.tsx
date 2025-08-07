@@ -42,6 +42,9 @@ export const Navigation = () => {
                 <Button variant="outline" asChild>
                   <a href="/discover">Find Screens</a>
                 </Button>
+                <Button variant="outline" asChild>
+                  <a href="/register-screen">Register Screen</a>
+                </Button>
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>
                     <Button variant="ghost" size="sm" className="flex items-center space-x-2">
