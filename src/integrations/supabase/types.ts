@@ -194,8 +194,11 @@ export type Database = {
           created_at: string
           display_name: string | null
           id: string
+          payout_enabled: boolean | null
           phone: string | null
           role: Database["public"]["Enums"]["app_role"]
+          stripe_account_id: string | null
+          total_earnings: number | null
           updated_at: string
           user_id: string
         }
@@ -205,8 +208,11 @@ export type Database = {
           created_at?: string
           display_name?: string | null
           id?: string
+          payout_enabled?: boolean | null
           phone?: string | null
           role?: Database["public"]["Enums"]["app_role"]
+          stripe_account_id?: string | null
+          total_earnings?: number | null
           updated_at?: string
           user_id: string
         }
@@ -216,8 +222,11 @@ export type Database = {
           created_at?: string
           display_name?: string | null
           id?: string
+          payout_enabled?: boolean | null
           phone?: string | null
           role?: Database["public"]["Enums"]["app_role"]
+          stripe_account_id?: string | null
+          total_earnings?: number | null
           updated_at?: string
           user_id?: string
         }
