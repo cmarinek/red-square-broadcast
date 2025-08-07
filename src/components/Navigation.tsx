@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Menu, X, Monitor, Upload, Calendar, CreditCard, User, LogOut, Settings } from "lucide-react";
 import { useAuth } from "@/context/AuthContext";
@@ -28,10 +29,10 @@ export const Navigation = () => {
             {user ? (
               <>
                 <Button variant="outline" asChild>
-                  <a href="/discover">Find Screens</a>
+                  <Link to="/discover">Find Screens</Link>
                 </Button>
                 <Button variant="outline" asChild>
-                  <a href="/my-campaigns">My Dashboard</a>
+                  <Link to="/my-campaigns">My Dashboard</Link>
                 </Button>
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>
@@ -44,22 +45,22 @@ export const Navigation = () => {
                     <DropdownMenuLabel>My Account</DropdownMenuLabel>
                     <DropdownMenuSeparator />
                     <DropdownMenuItem asChild>
-                      <a href="/profile" className="flex items-center">
+                      <Link to="/profile" className="flex items-center">
                         <User className="w-4 h-4 mr-2" />
                         Profile Settings
-                      </a>
+                      </Link>
                     </DropdownMenuItem>
                     <DropdownMenuItem asChild>
-                      <a href="/dashboard" className="flex items-center">
+                      <Link to="/dashboard" className="flex items-center">
                         <Monitor className="w-4 h-4 mr-2" />
                         Screen Management
-                      </a>
+                      </Link>
                     </DropdownMenuItem>
                     <DropdownMenuItem asChild>
-                      <a href="/device-setup" className="flex items-center">
+                      <Link to="/device-setup" className="flex items-center">
                         <Settings className="w-4 h-4 mr-2" />
                         Device Setup
-                      </a>
+                      </Link>
                     </DropdownMenuItem>
                     <DropdownMenuSeparator />
                     <DropdownMenuItem onClick={signOut}>
@@ -72,16 +73,16 @@ export const Navigation = () => {
             ) : (
               <>
                 <Button variant="outline" asChild>
-                  <a href="/how-it-works">How It Works</a>
+                  <Link to="/how-it-works">How It Works</Link>
                 </Button>
                 <Button variant="outline" asChild>
-                  <a href="/discover">Find Screens</a>
+                  <Link to="/discover">Find Screens</Link>
                 </Button>
                 <Button variant="outline" asChild>
-                  <a href="/auth">Sign In</a>
+                  <Link to="/auth">Sign In</Link>
                 </Button>
                 <Button className="bg-gradient-primary hover:shadow-[var(--shadow-red)] transition-all duration-300" asChild>
-                  <a href="/auth">Get Started</a>
+                  <Link to="/auth">Get Started</Link>
                 </Button>
               </>
             )}
@@ -101,19 +102,19 @@ export const Navigation = () => {
               {user ? (
                 <>
                   <Button variant="outline" asChild className="w-full justify-start">
-                    <a href="/discover">Find Screens</a>
+                    <Link to="/discover">Find Screens</Link>
                   </Button>
                   <Button variant="outline" asChild className="w-full justify-start">
-                    <a href="/my-campaigns">My Dashboard</a>
+                    <Link to="/my-campaigns">My Dashboard</Link>
                   </Button>
                   <Button variant="outline" asChild className="w-full justify-start">
-                    <a href="/profile">Profile Settings</a>
+                    <Link to="/profile">Profile Settings</Link>
                   </Button>
                   <Button variant="outline" asChild className="w-full justify-start">
-                    <a href="/dashboard">Screen Management</a>
+                    <Link to="/dashboard">Screen Management</Link>
                   </Button>
                   <Button variant="outline" asChild className="w-full justify-start">
-                    <a href="/device-setup">Device Setup</a>
+                    <Link to="/device-setup">Device Setup</Link>
                   </Button>
                   <Button onClick={signOut} variant="outline" className="w-full justify-start">
                     <LogOut className="w-4 h-4 mr-2" />
@@ -123,16 +124,16 @@ export const Navigation = () => {
               ) : (
                 <>
                   <Button variant="outline" asChild className="w-full justify-start">
-                    <a href="/how-it-works">How It Works</a>
+                    <Link to="/how-it-works">How It Works</Link>
                   </Button>
                   <Button variant="outline" asChild className="w-full justify-start">
-                    <a href="/discover">Find Screens</a>
+                    <Link to="/discover">Find Screens</Link>
                   </Button>
                   <Button variant="outline" asChild className="w-full justify-start">
-                    <a href="/auth">Sign In</a>
+                    <Link to="/auth">Sign In</Link>
                   </Button>
                   <Button className="bg-gradient-primary w-full justify-start" asChild>
-                    <a href="/auth">Get Started</a>
+                    <Link to="/auth">Get Started</Link>
                   </Button>
                 </>
               )}
