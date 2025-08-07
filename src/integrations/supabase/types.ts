@@ -19,6 +19,7 @@ export type Database = {
           content_id: string | null
           created_at: string
           id: string
+          payment_status: string | null
           scheduled_date: string
           scheduled_end_time: string
           scheduled_start_time: string
@@ -33,6 +34,7 @@ export type Database = {
           content_id?: string | null
           created_at?: string
           id?: string
+          payment_status?: string | null
           scheduled_date: string
           scheduled_end_time: string
           scheduled_start_time: string
@@ -47,6 +49,7 @@ export type Database = {
           content_id?: string | null
           created_at?: string
           id?: string
+          payment_status?: string | null
           scheduled_date?: string
           scheduled_end_time?: string
           scheduled_start_time?: string
@@ -101,6 +104,122 @@ export type Database = {
           file_url?: string
           id?: string
           user_id?: string | null
+        }
+        Relationships: []
+      }
+      notifications: {
+        Row: {
+          created_at: string
+          id: string
+          message: string
+          read: boolean | null
+          title: string
+          type: string | null
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          message: string
+          read?: boolean | null
+          title: string
+          type?: string | null
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          message?: string
+          read?: boolean | null
+          title?: string
+          type?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
+      payments: {
+        Row: {
+          amount: number
+          booking_id: string
+          created_at: string
+          currency: string | null
+          id: string
+          platform_fee: number | null
+          screen_owner_amount: number | null
+          status: string | null
+          stripe_payment_intent_id: string | null
+          stripe_session_id: string | null
+          updated_at: string
+        }
+        Insert: {
+          amount: number
+          booking_id: string
+          created_at?: string
+          currency?: string | null
+          id?: string
+          platform_fee?: number | null
+          screen_owner_amount?: number | null
+          status?: string | null
+          stripe_payment_intent_id?: string | null
+          stripe_session_id?: string | null
+          updated_at?: string
+        }
+        Update: {
+          amount?: number
+          booking_id?: string
+          created_at?: string
+          currency?: string | null
+          id?: string
+          platform_fee?: number | null
+          screen_owner_amount?: number | null
+          status?: string | null
+          stripe_payment_intent_id?: string | null
+          stripe_session_id?: string | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "payments_booking_id_fkey"
+            columns: ["booking_id"]
+            isOneToOne: false
+            referencedRelation: "bookings"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      profiles: {
+        Row: {
+          avatar_url: string | null
+          bio: string | null
+          created_at: string
+          display_name: string | null
+          id: string
+          phone: string | null
+          role: Database["public"]["Enums"]["app_role"]
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          avatar_url?: string | null
+          bio?: string | null
+          created_at?: string
+          display_name?: string | null
+          id?: string
+          phone?: string | null
+          role?: Database["public"]["Enums"]["app_role"]
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          avatar_url?: string | null
+          bio?: string | null
+          created_at?: string
+          display_name?: string | null
+          id?: string
+          phone?: string | null
+          role?: Database["public"]["Enums"]["app_role"]
+          updated_at?: string
+          user_id?: string
         }
         Relationships: []
       }
@@ -160,10 +279,16 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      has_role: {
+        Args: {
+          _user_id: string
+          _role: Database["public"]["Enums"]["app_role"]
+        }
+        Returns: boolean
+      }
     }
     Enums: {
-      [_ in never]: never
+      app_role: "screen_owner" | "broadcaster" | "admin"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -290,6 +415,8 @@ export type CompositeTypes<
 
 export const Constants = {
   public: {
-    Enums: {},
+    Enums: {
+      app_role: ["screen_owner", "broadcaster", "admin"],
+    },
   },
 } as const
