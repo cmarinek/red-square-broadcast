@@ -15,6 +15,7 @@ import ContentUpload from "./pages/ContentUpload";
 import DeviceSetup from "./pages/DeviceSetup";
 import SmartTVApp from "./pages/SmartTVApp";
 import BroadcasterDashboard from "./pages/BroadcasterDashboard";
+import AdminDashboard from "./pages/AdminDashboard";
 import Profile from "./pages/Profile";
 import Scheduling from "./pages/Scheduling";
 import Payment from "./pages/Payment";
@@ -35,6 +36,7 @@ const App = () => (
             <Route path="/" element={<Index />} />
             <Route path="/auth" element={<Auth />} />
             <Route path="/dashboard" element={<Dashboard />} />
+            <Route path="/admin" element={<AdminDashboard />} />
             <Route path="/my-campaigns" element={<BroadcasterDashboard />} />
             <Route path="/profile" element={<Profile />} />
             <Route path="/register-screen" element={<ScreenRegistration />} />

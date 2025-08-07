@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { Menu, X, Monitor, Upload, Calendar, CreditCard, User, LogOut, Settings, BarChart3 } from "lucide-react";
+import { Menu, X, Monitor, Upload, Calendar, CreditCard, User, LogOut, Settings, BarChart3, Shield } from "lucide-react";
 import { useAuth } from "@/context/AuthContext";
 import { useUserRoles } from "@/hooks/useUserRoles";
 import { 
@@ -48,6 +48,13 @@ export const Navigation = () => {
                     <Link to="/dashboard">Screen Dashboard</Link>
                   </Button>
                 )}
+                
+                {/* Admin features */}
+                {isAdmin() && (
+                  <Button variant="outline" asChild>
+                    <Link to="/admin">Admin Dashboard</Link>
+                  </Button>
+                )}
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>
                     <Button variant="ghost" size="sm" className="flex items-center space-x-2">
@@ -81,6 +88,16 @@ export const Navigation = () => {
                           </Link>
                         </DropdownMenuItem>
                       </>
+                    )}
+                    
+                    {/* Admin specific options */}
+                    {isAdmin() && (
+                      <DropdownMenuItem asChild>
+                        <Link to="/admin" className="flex items-center">
+                          <Shield className="w-4 h-4 mr-2" />
+                          Admin Dashboard
+                        </Link>
+                      </DropdownMenuItem>
                     )}
                     
                     {/* Broadcaster specific options */}
@@ -147,6 +164,13 @@ export const Navigation = () => {
                 {(isScreenOwner() || isAdmin()) && (
                   <Button variant="outline" asChild className="w-full justify-start">
                     <Link to="/dashboard">Screen Dashboard</Link>
+                  </Button>
+                )}
+                
+                {/* Admin features */}
+                {isAdmin() && (
+                  <Button variant="outline" asChild className="w-full justify-start">
+                    <Link to="/admin">Admin Dashboard</Link>
                   </Button>
                 )}
                 
