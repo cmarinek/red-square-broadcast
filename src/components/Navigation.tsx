@@ -1,8 +1,18 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
-import { Menu, X, Monitor, Upload, Calendar, CreditCard } from "lucide-react";
+import { Menu, X, Monitor, Upload, Calendar, CreditCard, User, LogOut } from "lucide-react";
+import { useAuth } from "@/context/AuthContext";
+import { 
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 export const Navigation = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const { user, signOut } = useAuth();
   return <nav className="fixed top-0 left-0 right-0 z-50 bg-background/80 backdrop-blur-md border-b border-border">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between h-16 items-center">
@@ -27,10 +37,38 @@ export const Navigation = () => {
             <a href="/discover" className="text-muted-foreground hover:text-foreground transition-colors">
               Discover Screens
             </a>
-            <Button variant="outline">Sign In</Button>
-            <Button className="bg-gradient-primary hover:shadow-[var(--shadow-red)] transition-all duration-300">
-              Get Started
-            </Button>
+            {user ? (
+              <>
+                <Button variant="outline" asChild>
+                  <a href="/discover">Find Screens</a>
+                </Button>
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <Button variant="ghost" size="sm" className="flex items-center space-x-2">
+                      <User className="w-4 h-4" />
+                      <span className="hidden sm:inline">Account</span>
+                    </Button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent align="end">
+                    <DropdownMenuLabel>My Account</DropdownMenuLabel>
+                    <DropdownMenuSeparator />
+                    <DropdownMenuItem onClick={signOut}>
+                      <LogOut className="w-4 h-4 mr-2" />
+                      Sign Out
+                    </DropdownMenuItem>
+                  </DropdownMenuContent>
+                </DropdownMenu>
+              </>
+            ) : (
+              <>
+                <Button variant="outline" asChild>
+                  <a href="/auth">Sign In</a>
+                </Button>
+                <Button className="bg-gradient-primary hover:shadow-[var(--shadow-red)] transition-all duration-300" asChild>
+                  <a href="/auth">Get Started</a>
+                </Button>
+              </>
+            )}
           </div>
 
           {/* Mobile menu button */}
@@ -57,8 +95,20 @@ export const Navigation = () => {
                 Discover Screens
               </a>
               <div className="flex flex-col space-y-2 pt-4">
-                <Button variant="outline">Sign In</Button>
-                <Button className="bg-gradient-primary">Get Started</Button>
+                {user ? (
+                  <Button onClick={signOut} variant="outline">
+                    Sign Out
+                  </Button>
+                ) : (
+                  <>
+                    <Button variant="outline" asChild>
+                      <a href="/auth">Sign In</a>
+                    </Button>
+                    <Button className="bg-gradient-primary" asChild>
+                      <a href="/auth">Get Started</a>
+                    </Button>
+                  </>
+                )}
               </div>
             </div>
           </div>}

@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { useParams, useNavigate, useSearchParams } from "react-router-dom";
-import { CreditCard, Lock, CheckCircle, AlertCircle } from "lucide-react";
+import { CreditCard, Lock, CheckCircle, AlertCircle, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -8,6 +8,7 @@ import { Separator } from "@/components/ui/separator";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { Navigation } from "@/components/Navigation";
+import { useAuth } from "@/context/AuthContext";
 import { format } from "date-fns";
 
 interface BookingDetails {
@@ -33,11 +34,20 @@ export default function Payment() {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const { toast } = useToast();
+  const { user } = useAuth();
   
   const bookingId = searchParams.get('bookingId');
   const [booking, setBooking] = useState<BookingDetails | null>(null);
   const [loading, setLoading] = useState(true);
   const [processing, setProcessing] = useState(false);
+
+  // Redirect to auth if not logged in
+  useEffect(() => {
+    if (!user) {
+      navigate('/auth');
+      return;
+    }
+  }, [user, navigate]);
 
   useEffect(() => {
     if (bookingId) {
@@ -72,41 +82,36 @@ export default function Payment() {
   };
 
   const processPayment = async () => {
-    if (!booking) return;
+    if (!booking || !user) return;
 
     setProcessing(true);
 
     try {
-      // Simulate payment processing
-      await new Promise(resolve => setTimeout(resolve, 2000));
-
-      // Update booking status
-      const { error: updateError } = await supabase
-        .from('bookings')
-        .update({ 
-          status: 'confirmed',
-          stripe_session_id: `sim_${Date.now()}` // Simulated payment ID
-        })
-        .eq('id', booking.id);
-
-      if (updateError) throw updateError;
-
-      toast({
-        title: "Payment successful!",
-        description: "Your booking has been confirmed."
+      // Create Stripe checkout session
+      const { data, error } = await supabase.functions.invoke('create-payment', {
+        body: {
+          bookingId: booking.id,
+          successUrl: `${window.location.origin}/confirmation/${booking.id}?session_id={CHECKOUT_SESSION_ID}`,
+          cancelUrl: window.location.href,
+        },
       });
 
-      // Navigate to confirmation
-      navigate(`/confirmation/${booking.id}`);
+      if (error) throw error;
+
+      if (data?.url) {
+        // Redirect to Stripe Checkout
+        window.location.href = data.url;
+      } else {
+        throw new Error("No checkout URL received");
+      }
 
     } catch (error) {
       console.error("Payment error:", error);
       toast({
         title: "Payment failed",
-        description: "Please try again.",
+        description: error.message || "Please try again.",
         variant: "destructive"
       });
-    } finally {
       setProcessing(false);
     }
   };
@@ -265,9 +270,9 @@ export default function Payment() {
               <CardContent>
                 <div className="bg-muted p-6 rounded-lg text-center">
                   <CreditCard className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
-                  <p className="text-lg font-medium mb-2">Stripe Payment Integration</p>
+                  <p className="text-lg font-medium mb-2">Secure Stripe Payment</p>
                   <p className="text-sm text-muted-foreground mb-4">
-                    In a real implementation, this would redirect to Stripe Checkout
+                    You'll be redirected to Stripe's secure checkout page
                   </p>
                   <div className="flex items-center justify-center gap-2 text-xs text-muted-foreground">
                     <Lock className="h-3 w-3" />
@@ -292,7 +297,14 @@ export default function Payment() {
                 disabled={processing}
                 className="flex-1"
               >
-                {processing ? "Processing..." : `Pay $${(booking.total_amount / 100).toFixed(2)}`}
+                {processing ? (
+                  <>
+                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                    Redirecting to Stripe...
+                  </>
+                ) : (
+                  `Pay $${(booking.total_amount / 100).toFixed(2)}`
+                )}
               </Button>
             </div>
 
