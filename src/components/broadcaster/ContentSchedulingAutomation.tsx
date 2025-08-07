@@ -99,7 +99,8 @@ export const ContentSchedulingAutomation = ({ contentUploads, screens }: Content
         ...schedule,
         time_slots: (schedule.time_slots as any) || [],
         content: (schedule as any).content_uploads,
-        status: schedule.status as 'active' | 'paused' | 'completed' | 'expired'
+        status: schedule.status as 'active' | 'paused' | 'completed' | 'expired',
+        repeat_pattern: (schedule.repeat_pattern as 'none' | 'daily' | 'weekly' | 'monthly') || 'none'
       })) || [];
 
       setSchedules(processedSchedules);

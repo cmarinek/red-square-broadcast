@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import { 
   Calendar, 
@@ -92,7 +92,7 @@ const BroadcasterDashboard = () => {
     fetchAdditionalData();
   }, [user, navigate]);
 
-  const fetchAdditionalData = async () => {
+  const fetchAdditionalData = useCallback(async () => {
     try {
       // Fetch content uploads
       const { data: contentData } = await supabase
@@ -117,7 +117,7 @@ const BroadcasterDashboard = () => {
     } catch (error) {
       console.error("Error fetching additional data:", error);
     }
-  }, [user, navigate]);
+  }, [user]);
 
   const fetchUserBookings = async () => {
     try {
