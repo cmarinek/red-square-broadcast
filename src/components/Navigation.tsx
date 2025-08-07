@@ -24,19 +24,7 @@ export const Navigation = () => {
           </div>
 
           {/* Desktop Navigation */}
-          <div className="hidden md:flex items-center space-x-8">
-            <a href="#features" className="text-muted-foreground hover:text-foreground transition-colors">
-              Features
-            </a>
-            <a href="/production-plan" className="text-muted-foreground hover:text-foreground transition-colors">
-              Production Road Map
-            </a>
-            <a href="/how-it-works" className="text-muted-foreground hover:text-foreground transition-colors">
-              How It Works
-            </a>
-            <a href="/discover" className="text-muted-foreground hover:text-foreground transition-colors">
-              Discover Screens
-            </a>
+          <div className="hidden md:flex items-center space-x-4">
             {user ? (
               <>
                 <Button variant="outline" asChild>
@@ -68,6 +56,12 @@ export const Navigation = () => {
             ) : (
               <>
                 <Button variant="outline" asChild>
+                  <a href="/how-it-works">How It Works</a>
+                </Button>
+                <Button variant="outline" asChild>
+                  <a href="/discover">Find Screens</a>
+                </Button>
+                <Button variant="outline" asChild>
                   <a href="/auth">Sign In</a>
                 </Button>
                 <Button className="bg-gradient-primary hover:shadow-[var(--shadow-red)] transition-all duration-300" asChild>
@@ -87,35 +81,39 @@ export const Navigation = () => {
 
         {/* Mobile Navigation */}
         {isMenuOpen && <div className="md:hidden pb-4">
-            <div className="flex flex-col space-y-4">
-              <a href="#features" className="text-muted-foreground hover:text-foreground transition-colors">
-                Features
-              </a>
-              <a href="#how-it-works" className="text-muted-foreground hover:text-foreground transition-colors">
-                How It Works
-              </a>
-              <a href="/how-it-works" className="text-muted-foreground hover:text-foreground transition-colors">
-                How It Works (Detailed)
-              </a>
-              <a href="/discover" className="text-muted-foreground hover:text-foreground transition-colors">
-                Discover Screens
-              </a>
-              <div className="flex flex-col space-y-2 pt-4">
-                {user ? (
-                  <Button onClick={signOut} variant="outline">
+            <div className="flex flex-col space-y-3">
+              {user ? (
+                <>
+                  <Button variant="outline" asChild className="w-full justify-start">
+                    <a href="/discover">Find Screens</a>
+                  </Button>
+                  <Button variant="outline" asChild className="w-full justify-start">
+                    <a href="/dashboard">My Screens</a>
+                  </Button>
+                  <Button variant="outline" asChild className="w-full justify-start">
+                    <a href="/device-setup">Device Setup</a>
+                  </Button>
+                  <Button onClick={signOut} variant="outline" className="w-full justify-start">
+                    <LogOut className="w-4 h-4 mr-2" />
                     Sign Out
                   </Button>
-                ) : (
-                  <>
-                    <Button variant="outline" asChild>
-                      <a href="/auth">Sign In</a>
-                    </Button>
-                    <Button className="bg-gradient-primary" asChild>
-                      <a href="/auth">Get Started</a>
-                    </Button>
-                  </>
-                )}
-              </div>
+                </>
+              ) : (
+                <>
+                  <Button variant="outline" asChild className="w-full justify-start">
+                    <a href="/how-it-works">How It Works</a>
+                  </Button>
+                  <Button variant="outline" asChild className="w-full justify-start">
+                    <a href="/discover">Find Screens</a>
+                  </Button>
+                  <Button variant="outline" asChild className="w-full justify-start">
+                    <a href="/auth">Sign In</a>
+                  </Button>
+                  <Button className="bg-gradient-primary w-full justify-start" asChild>
+                    <a href="/auth">Get Started</a>
+                  </Button>
+                </>
+              )}
             </div>
           </div>}
       </div>
