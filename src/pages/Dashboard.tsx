@@ -22,7 +22,7 @@ import { Badge } from "@/components/ui/badge";
 import { Switch } from "@/components/ui/switch";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
-import { Navigation } from "@/components/Navigation";
+import { Layout } from "@/components/Layout";
 import { useAuth } from "@/context/AuthContext";
 import { format } from "date-fns";
 
@@ -129,8 +129,7 @@ const Dashboard = () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-background">
-        <Navigation />
+      <Layout>
         <div className="container mx-auto px-4 py-8">
           <div className="animate-pulse space-y-4">
             <div className="h-8 bg-muted rounded w-1/4"></div>
@@ -141,14 +140,12 @@ const Dashboard = () => {
             </div>
           </div>
         </div>
-      </div>
+      </Layout>
     );
   }
 
   return (
-    <div className="min-h-screen bg-background">
-      <Navigation />
-      
+    <Layout>
       <div className="container mx-auto px-4 py-8">
         <div className="flex justify-between items-center mb-8">
           <div>
@@ -346,7 +343,7 @@ const Dashboard = () => {
           </div>
         )}
       </div>
-    </div>
+    </Layout>
   );
 };
 

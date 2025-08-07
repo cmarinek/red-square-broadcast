@@ -35,7 +35,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Progress } from "@/components/ui/progress";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
-import { Navigation } from "@/components/Navigation";
+import { Layout } from "@/components/Layout";
 import { useAuth } from "@/context/AuthContext";
 import { format, isAfter, isBefore, addDays } from "date-fns";
 
@@ -210,8 +210,7 @@ const BroadcasterDashboard = () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-background">
-        <Navigation />
+      <Layout>
         <div className="container mx-auto px-4 py-8">
           <div className="animate-pulse space-y-4">
             <div className="h-8 bg-muted rounded w-1/4"></div>
@@ -222,14 +221,12 @@ const BroadcasterDashboard = () => {
             </div>
           </div>
         </div>
-      </div>
+      </Layout>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-background via-background to-muted/20">
-      <Navigation />
-      
+    <Layout>
       <div className="container mx-auto px-4 py-8">
         {/* Header Section */}
         <div className="flex flex-col lg:flex-row lg:items-center justify-between mb-8 gap-4">
@@ -408,7 +405,7 @@ const BroadcasterDashboard = () => {
           </CardContent>
         </Card>
       </div>
-    </div>
+    </Layout>
   );
 
   function renderCampaignsList(filteredBookings: BookingData[]) {

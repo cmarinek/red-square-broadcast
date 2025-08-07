@@ -32,7 +32,7 @@ export const Navigation = () => {
                   <Link to="/discover">Find Screens</Link>
                 </Button>
                 <Button variant="outline" asChild>
-                  <Link to="/my-campaigns">My Dashboard</Link>
+                  <Link to="/my-campaigns">My Campaigns</Link>
                 </Button>
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>
@@ -105,7 +105,7 @@ export const Navigation = () => {
                     <Link to="/discover">Find Screens</Link>
                   </Button>
                   <Button variant="outline" asChild className="w-full justify-start">
-                    <Link to="/my-campaigns">My Dashboard</Link>
+                    <Link to="/my-campaigns">My Campaigns</Link>
                   </Button>
                   <Button variant="outline" asChild className="w-full justify-start">
                     <Link to="/profile">Profile Settings</Link>

@@ -6,7 +6,7 @@ import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { supabase } from "@/integrations/supabase/client";
-import { Navigation } from "@/components/Navigation";
+import { Layout } from "@/components/Layout";
 
 interface Screen {
   id: string;
@@ -58,9 +58,7 @@ export default function ScreenDiscovery() {
   };
 
   return (
-    <div className="min-h-screen bg-background">
-      <Navigation />
-      
+    <Layout>
       <div className="container mx-auto px-4 py-8">
         <div className="max-w-4xl mx-auto">
           <div className="text-center mb-8">
@@ -172,6 +170,6 @@ export default function ScreenDiscovery() {
           </div>
         </div>
       </div>
-    </div>
+    </Layout>
   );
 }
