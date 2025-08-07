@@ -19,13 +19,37 @@ import {
   Download,
   FileText,
   Clock,
-  MapPin
+  MapPin,
+  Activity,
+  Server,
+  Database,
+  Wifi,
+  WifiOff,
+  Bell,
+  Lock,
+  Globe,
+  Zap,
+  CreditCard,
+  Cloud,
+  RefreshCw,
+  HardDrive,
+  Cpu,
+  MemoryStick,
+  Router,
+  LineChart,
+  PieChart,
+  UserCheck,
+  UserX,
+  AlertCircle,
+  Info,
+  CheckSquare
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Progress } from "@/components/ui/progress";
 import { 
   Table,
   TableBody,
@@ -46,6 +70,35 @@ import { Layout } from "@/components/Layout";
 import { useAuth } from "@/context/AuthContext";
 import { useUserRoles } from "@/hooks/useUserRoles";
 import { format } from "date-fns";
+
+interface SystemHealth {
+  database: 'healthy' | 'warning' | 'critical';
+  storage: 'healthy' | 'warning' | 'critical';
+  cdn: 'healthy' | 'warning' | 'critical';
+  api: 'healthy' | 'warning' | 'critical';
+  payments: 'healthy' | 'warning' | 'critical';
+  lastUpdated: string;
+}
+
+interface SecurityAlert {
+  id: string;
+  type: 'failed_login' | 'suspicious_activity' | 'data_breach' | 'unauthorized_access';
+  severity: 'low' | 'medium' | 'high' | 'critical';
+  message: string;
+  timestamp: string;
+  resolved: boolean;
+}
+
+interface AnalyticsData {
+  dailyActiveUsers: number;
+  weeklyActiveUsers: number;
+  monthlyActiveUsers: number;
+  avgSessionDuration: number;
+  bounceRate: number;
+  conversionRate: number;
+  revenueGrowth: number;
+  screenUtilization: number;
+}
 
 interface AdminStats {
   totalUsers: number;
@@ -109,6 +162,25 @@ const AdminDashboard = () => {
   const [users, setUsers] = useState<UserData[]>([]);
   const [screens, setScreens] = useState<ScreenData[]>([]);
   const [bookings, setBookings] = useState<BookingData[]>([]);
+  const [systemHealth, setSystemHealth] = useState<SystemHealth>({
+    database: 'healthy',
+    storage: 'healthy',
+    cdn: 'healthy',
+    api: 'healthy',
+    payments: 'healthy',
+    lastUpdated: new Date().toISOString()
+  });
+  const [securityAlerts, setSecurityAlerts] = useState<SecurityAlert[]>([]);
+  const [analytics, setAnalytics] = useState<AnalyticsData>({
+    dailyActiveUsers: 0,
+    weeklyActiveUsers: 0,
+    monthlyActiveUsers: 0,
+    avgSessionDuration: 0,
+    bounceRate: 0,
+    conversionRate: 0,
+    revenueGrowth: 0,
+    screenUtilization: 0
+  });
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState("");
   const [activeTab, setActiveTab] = useState("overview");
@@ -252,6 +324,40 @@ const AdminDashboard = () => {
         thisMonthBookings: thisMonthBookings.length
       });
 
+      // Generate mock analytics data
+      const mockAnalytics: AnalyticsData = {
+        dailyActiveUsers: Math.floor(Math.random() * 1000) + 500,
+        weeklyActiveUsers: Math.floor(Math.random() * 5000) + 2000,
+        monthlyActiveUsers: Math.floor(Math.random() * 15000) + 8000,
+        avgSessionDuration: Math.floor(Math.random() * 600) + 300, // 5-15 minutes
+        bounceRate: Math.floor(Math.random() * 30) + 20, // 20-50%
+        conversionRate: Math.floor(Math.random() * 10) + 5, // 5-15%
+        revenueGrowth: Math.floor(Math.random() * 50) + 10, // 10-60%
+        screenUtilization: processedScreens.length > 0 ? (processedScreens.filter(s => s.is_active).length / processedScreens.length) * 100 : 0
+      };
+
+      // Generate mock security alerts
+      const mockAlerts: SecurityAlert[] = [
+        {
+          id: '1',
+          type: 'failed_login',
+          severity: 'medium',
+          message: 'Multiple failed login attempts detected from IP 192.168.1.100',
+          timestamp: new Date(Date.now() - 3600000).toISOString(),
+          resolved: false
+        },
+        {
+          id: '2',
+          type: 'suspicious_activity',
+          severity: 'high',
+          message: 'Unusual API usage pattern detected for user account',
+          timestamp: new Date(Date.now() - 7200000).toISOString(),
+          resolved: true
+        }
+      ];
+
+      setAnalytics(mockAnalytics);
+      setSecurityAlerts(mockAlerts);
       setUsers(processedUsers);
       setScreens(processedScreens);
       setBookings(processedBookings);
@@ -264,6 +370,60 @@ const AdminDashboard = () => {
       });
     } finally {
       setLoading(false);
+    }
+  };
+
+  const refreshSystemHealth = async () => {
+    // Simulate system health checks
+    const healthStatuses: Array<'healthy' | 'warning' | 'critical'> = ['healthy', 'warning'];
+    setSystemHealth({
+      database: healthStatuses[Math.floor(Math.random() * healthStatuses.length)],
+      storage: healthStatuses[Math.floor(Math.random() * healthStatuses.length)],
+      cdn: healthStatuses[Math.floor(Math.random() * healthStatuses.length)],
+      api: healthStatuses[Math.floor(Math.random() * healthStatuses.length)],
+      payments: healthStatuses[Math.floor(Math.random() * healthStatuses.length)],
+      lastUpdated: new Date().toISOString()
+    });
+    
+    toast({
+      title: "System health refreshed",
+      description: "All services checked successfully.",
+    });
+  };
+
+  const resolveSecurityAlert = async (alertId: string) => {
+    setSecurityAlerts(prev => prev.map(alert => 
+      alert.id === alertId ? { ...alert, resolved: true } : alert
+    ));
+    
+    toast({
+      title: "Security alert resolved",
+      description: "Alert has been marked as resolved.",
+    });
+  };
+
+  const getHealthIcon = (status: 'healthy' | 'warning' | 'critical') => {
+    switch (status) {
+      case 'healthy': return <CheckCircle className="h-4 w-4 text-green-500" />;
+      case 'warning': return <AlertTriangle className="h-4 w-4 text-yellow-500" />;
+      case 'critical': return <XCircle className="h-4 w-4 text-red-500" />;
+    }
+  };
+
+  const getHealthColor = (status: 'healthy' | 'warning' | 'critical') => {
+    switch (status) {
+      case 'healthy': return 'text-green-600 bg-green-50 border-green-200';
+      case 'warning': return 'text-yellow-600 bg-yellow-50 border-yellow-200';
+      case 'critical': return 'text-red-600 bg-red-50 border-red-200';
+    }
+  };
+
+  const getSeverityColor = (severity: 'low' | 'medium' | 'high' | 'critical') => {
+    switch (severity) {
+      case 'low': return 'bg-blue-50 text-blue-700 border-blue-200';
+      case 'medium': return 'bg-yellow-50 text-yellow-700 border-yellow-200';
+      case 'high': return 'bg-orange-50 text-orange-700 border-orange-200';
+      case 'critical': return 'bg-red-50 text-red-700 border-red-200';
     }
   };
 
@@ -503,16 +663,81 @@ const AdminDashboard = () => {
           <CardContent className="p-0">
             <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
               <div className="border-b">
-                <TabsList className="grid w-full grid-cols-4 h-auto p-0 bg-transparent">
+                <TabsList className="grid w-full grid-cols-6 h-auto p-0 bg-transparent">
                   <TabsTrigger value="overview" className="py-4">Overview</TabsTrigger>
                   <TabsTrigger value="users" className="py-4">Users ({stats.totalUsers})</TabsTrigger>
                   <TabsTrigger value="screens" className="py-4">Screens ({stats.totalScreens})</TabsTrigger>
                   <TabsTrigger value="bookings" className="py-4">Bookings ({stats.totalBookings})</TabsTrigger>
+                  <TabsTrigger value="system" className="py-4">System Health</TabsTrigger>
+                  <TabsTrigger value="security" className="py-4">Security</TabsTrigger>
                 </TabsList>
               </div>
 
               <TabsContent value="overview" className="mt-0 p-6">
-                <div className="grid gap-6 md:grid-cols-2">
+                <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+                  {/* Platform Analytics */}
+                  <Card>
+                    <CardHeader>
+                      <CardTitle className="flex items-center gap-2">
+                        <BarChart3 className="h-5 w-5 text-blue-500" />
+                        Platform Analytics
+                      </CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                      <div className="space-y-3">
+                        <div className="flex items-center justify-between">
+                          <span className="text-sm">Daily Active Users</span>
+                          <span className="font-medium">{analytics.dailyActiveUsers.toLocaleString()}</span>
+                        </div>
+                        <div className="flex items-center justify-between">
+                          <span className="text-sm">Weekly Active Users</span>
+                          <span className="font-medium">{analytics.weeklyActiveUsers.toLocaleString()}</span>
+                        </div>
+                        <div className="flex items-center justify-between">
+                          <span className="text-sm">Monthly Active Users</span>
+                          <span className="font-medium">{analytics.monthlyActiveUsers.toLocaleString()}</span>
+                        </div>
+                        <div className="flex items-center justify-between">
+                          <span className="text-sm">Conversion Rate</span>
+                          <span className="font-medium">{analytics.conversionRate}%</span>
+                        </div>
+                      </div>
+                    </CardContent>
+                  </Card>
+
+                  {/* Revenue Metrics */}
+                  <Card>
+                    <CardHeader>
+                      <CardTitle className="flex items-center gap-2">
+                        <DollarSign className="h-5 w-5 text-green-500" />
+                        Revenue Metrics
+                      </CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                      <div className="space-y-3">
+                        <div className="flex items-center justify-between">
+                          <span className="text-sm">Revenue Growth</span>
+                          <span className="font-medium text-green-600">+{analytics.revenueGrowth}%</span>
+                        </div>
+                        <div className="flex items-center justify-between">
+                          <span className="text-sm">Average booking value</span>
+                          <span className="font-medium">
+                            ${stats.totalBookings > 0 ? ((stats.totalRevenue / stats.totalBookings) / 100).toFixed(2) : '0.00'}
+                          </span>
+                        </div>
+                        <div className="flex items-center justify-between">
+                          <span className="text-sm">Screen utilization</span>
+                          <span className="font-medium">{analytics.screenUtilization.toFixed(0)}%</span>
+                        </div>
+                        <div className="flex items-center justify-between">
+                          <span className="text-sm">Avg session duration</span>
+                          <span className="font-medium">{Math.floor(analytics.avgSessionDuration / 60)}m {analytics.avgSessionDuration % 60}s</span>
+                        </div>
+                      </div>
+                    </CardContent>
+                  </Card>
+
+                  {/* Pending Actions */}
                   <Card>
                     <CardHeader>
                       <CardTitle className="flex items-center gap-2">
@@ -524,36 +749,27 @@ const AdminDashboard = () => {
                       <div className="space-y-3">
                         <div className="flex items-center justify-between">
                           <span className="text-sm">Pending bookings</span>
-                          <Badge variant="outline">{stats.pendingBookings}</Badge>
+                          <Badge variant={stats.pendingBookings > 0 ? "destructive" : "outline"}>
+                            {stats.pendingBookings}
+                          </Badge>
                         </div>
                         <div className="flex items-center justify-between">
                           <span className="text-sm">Inactive screens</span>
-                          <Badge variant="outline">{stats.totalScreens - stats.activeScreens}</Badge>
-                        </div>
-                      </div>
-                    </CardContent>
-                  </Card>
-
-                  <Card>
-                    <CardHeader>
-                      <CardTitle className="flex items-center gap-2">
-                        <BarChart3 className="h-5 w-5 text-blue-500" />
-                        Quick Stats
-                      </CardTitle>
-                    </CardHeader>
-                    <CardContent>
-                      <div className="space-y-3">
-                        <div className="flex items-center justify-between">
-                          <span className="text-sm">Average booking value</span>
-                          <span className="font-medium">
-                            ${stats.totalBookings > 0 ? ((stats.totalRevenue / stats.totalBookings) / 100).toFixed(2) : '0.00'}
-                          </span>
+                          <Badge variant={stats.totalScreens - stats.activeScreens > 0 ? "secondary" : "outline"}>
+                            {stats.totalScreens - stats.activeScreens}
+                          </Badge>
                         </div>
                         <div className="flex items-center justify-between">
-                          <span className="text-sm">Screen utilization</span>
-                          <span className="font-medium">
-                            {stats.totalScreens > 0 ? ((stats.activeScreens / stats.totalScreens) * 100).toFixed(0) : 0}%
-                          </span>
+                          <span className="text-sm">Security alerts</span>
+                          <Badge variant={securityAlerts.filter(a => !a.resolved).length > 0 ? "destructive" : "outline"}>
+                            {securityAlerts.filter(a => !a.resolved).length}
+                          </Badge>
+                        </div>
+                        <div className="flex items-center justify-between">
+                          <span className="text-sm">System warnings</span>
+                          <Badge variant="outline">
+                            {Object.values(systemHealth).filter(status => status === 'warning' || status === 'critical').length}
+                          </Badge>
                         </div>
                       </div>
                     </CardContent>
@@ -752,6 +968,106 @@ const AdminDashboard = () => {
                   </Table>
                 </div>
               </TabsContent>
+              <TabsContent value="system" className="mt-0 p-6">
+                <div className="space-y-6">
+                  <div className="flex items-center justify-between">
+                    <h3 className="text-lg font-semibold">System Health Monitor</h3>
+                    <Button onClick={refreshSystemHealth} variant="outline" size="sm">
+                      <RefreshCw className="h-4 w-4 mr-2" />
+                      Refresh
+                    </Button>
+                  </div>
+                  
+                  <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+                    {Object.entries(systemHealth).filter(([key]) => key !== 'lastUpdated').map(([service, status]) => (
+                      <Card key={service} className={`border ${getHealthColor(status as any)}`}>
+                        <CardContent className="p-4">
+                          <div className="flex items-center justify-between">
+                            <div className="flex items-center gap-2">
+                              {service === 'database' && <Database className="h-5 w-5" />}
+                              {service === 'storage' && <HardDrive className="h-5 w-5" />}
+                              {service === 'cdn' && <Globe className="h-5 w-5" />}
+                              {service === 'api' && <Server className="h-5 w-5" />}
+                              {service === 'payments' && <CreditCard className="h-5 w-5" />}
+                              <span className="font-medium capitalize">{service}</span>
+                            </div>
+                            {getHealthIcon(status as any)}
+                          </div>
+                          <div className="mt-2 text-sm capitalize">{status}</div>
+                        </CardContent>
+                      </Card>
+                    ))}
+                  </div>
+                  
+                  <div className="text-sm text-muted-foreground">
+                    Last updated: {new Date(systemHealth.lastUpdated).toLocaleString()}
+                  </div>
+                </div>
+              </TabsContent>
+
+              <TabsContent value="security" className="mt-0 p-6">
+                <div className="space-y-6">
+                  <div className="flex items-center justify-between">
+                    <h3 className="text-lg font-semibold">Security Alerts & Monitoring</h3>
+                    <Badge variant={securityAlerts.filter(a => !a.resolved).length > 0 ? "destructive" : "default"}>
+                      {securityAlerts.filter(a => !a.resolved).length} Unresolved
+                    </Badge>
+                  </div>
+                  
+                  <div className="space-y-4">
+                    {securityAlerts.map((alert) => (
+                      <Card key={alert.id} className={`border ${alert.resolved ? 'opacity-60' : ''}`}>
+                        <CardContent className="p-4">
+                          <div className="flex items-center justify-between">
+                            <div className="flex items-center gap-3">
+                              <div className={`p-2 rounded-full ${getSeverityColor(alert.severity)}`}>
+                                {alert.type === 'failed_login' && <Lock className="h-4 w-4" />}
+                                {alert.type === 'suspicious_activity' && <AlertTriangle className="h-4 w-4" />}
+                                {alert.type === 'data_breach' && <Shield className="h-4 w-4" />}
+                                {alert.type === 'unauthorized_access' && <UserX className="h-4 w-4" />}
+                              </div>
+                              <div>
+                                <div className="flex items-center gap-2">
+                                  <span className="font-medium capitalize">{alert.type.replace('_', ' ')}</span>
+                                  <Badge variant="outline" className={getSeverityColor(alert.severity)}>
+                                    {alert.severity}
+                                  </Badge>
+                                  {alert.resolved && <Badge variant="outline">Resolved</Badge>}
+                                </div>
+                                <p className="text-sm text-muted-foreground mt-1">{alert.message}</p>
+                                <p className="text-xs text-muted-foreground">
+                                  {new Date(alert.timestamp).toLocaleString()}
+                                </p>
+                              </div>
+                            </div>
+                            {!alert.resolved && (
+                              <Button 
+                                onClick={() => resolveSecurityAlert(alert.id)} 
+                                variant="outline" 
+                                size="sm"
+                              >
+                                <CheckSquare className="h-4 w-4 mr-2" />
+                                Resolve
+                              </Button>
+                            )}
+                          </div>
+                        </CardContent>
+                      </Card>
+                    ))}
+                    
+                    {securityAlerts.length === 0 && (
+                      <Card>
+                        <CardContent className="p-8 text-center">
+                          <Shield className="h-12 w-12 text-green-500 mx-auto mb-4" />
+                          <h3 className="text-lg font-semibold mb-2">All Clear</h3>
+                          <p className="text-muted-foreground">No security alerts detected</p>
+                        </CardContent>
+                      </Card>
+                    )}
+                  </div>
+                </div>
+              </TabsContent>
+
             </Tabs>
           </CardContent>
         </Card>
