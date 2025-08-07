@@ -485,11 +485,64 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      create_security_alert: {
+        Args: {
+          alert_type: string
+          severity: string
+          title: string
+          message: string
+          affected_user_id?: string
+          ip_address?: unknown
+          user_agent?: string
+          metadata?: Json
+        }
+        Returns: string
+      }
+      get_platform_analytics: {
+        Args: Record<PropertyKey, never>
+        Returns: Json
+      }
       has_role: {
         Args: {
           _user_id: string
           _role: Database["public"]["Enums"]["app_role"]
         }
+        Returns: boolean
+      }
+      log_admin_action: {
+        Args: {
+          admin_user_id: string
+          action: string
+          target_type: string
+          target_id?: string
+          old_values?: Json
+          new_values?: Json
+          ip_address?: unknown
+          user_agent?: string
+        }
+        Returns: string
+      }
+      record_analytics_metric: {
+        Args: {
+          metric_name: string
+          metric_value: number
+          metric_date?: string
+          metadata?: Json
+        }
+        Returns: string
+      }
+      record_system_health: {
+        Args: {
+          service_name: string
+          status: string
+          response_time_ms?: number
+          error_message?: string
+          metadata?: Json
+        }
+        Returns: string
+      }
+      resolve_security_alert: {
+        Args: { alert_id: string; resolved_by_user_id: string }
         Returns: boolean
       }
     }

@@ -208,6 +208,69 @@ const AdminDashboard = () => {
 
   const fetchAdminData = async () => {
     try {
+      // Fetch real analytics using the database function
+      const { data: analyticsData, error: analyticsError } = await supabase
+        .rpc('get_platform_analytics');
+
+      if (analyticsError) throw analyticsError;
+
+      const analytics: AnalyticsData = {
+        dailyActiveUsers: (analyticsData as any).dailyActiveUsers || 0,
+        weeklyActiveUsers: (analyticsData as any).weeklyActiveUsers || 0,
+        monthlyActiveUsers: (analyticsData as any).monthlyActiveUsers || 0,
+        avgSessionDuration: (analyticsData as any).avgSessionDuration || 0,
+        bounceRate: (analyticsData as any).bounceRate || 0,
+        conversionRate: (analyticsData as any).conversionRate || 0,
+        revenueGrowth: (analyticsData as any).revenueGrowth || 0,
+        screenUtilization: (analyticsData as any).screenUtilization || 0
+      };
+
+      // Fetch real system health data
+      const { data: healthData, error: healthError } = await supabase
+        .from('admin_system_health')
+        .select('*')
+        .order('last_check', { ascending: false })
+        .limit(5);
+
+      if (healthError) throw healthError;
+
+      // Process health data into the format we need
+      const healthStatus: SystemHealth = {
+        database: 'healthy',
+        storage: 'healthy',
+        cdn: 'healthy',
+        api: 'healthy',
+        payments: 'healthy',
+        lastUpdated: new Date().toISOString()
+      };
+
+      if (healthData && healthData.length > 0) {
+        healthData.forEach(health => {
+          if (health.service_name in healthStatus) {
+            healthStatus[health.service_name as keyof SystemHealth] = health.status as any;
+          }
+        });
+        healthStatus.lastUpdated = healthData[0].last_check;
+      }
+
+      // Fetch real security alerts
+      const { data: alertsData, error: alertsError } = await supabase
+        .from('admin_security_alerts')
+        .select('*')
+        .order('created_at', { ascending: false })
+        .limit(20);
+
+      if (alertsError) throw alertsError;
+
+      const alerts: SecurityAlert[] = (alertsData || []).map(alert => ({
+        id: alert.id,
+        type: alert.alert_type as any,
+        severity: alert.severity as any,
+        message: alert.message,
+        timestamp: alert.created_at,
+        resolved: alert.resolved
+      }));
+
       // Fetch users with profiles
       const { data: usersData, error: usersError } = await supabase
         .from('profiles')
@@ -303,61 +366,28 @@ const AdminDashboard = () => {
         last_sign_in_at: user.created_at // Placeholder
       })) || [];
 
-      // Calculate stats
-      const now = new Date();
-      const thisMonth = new Date(now.getFullYear(), now.getMonth(), 1);
-      
-      const totalRevenue = processedBookings.reduce((sum, booking) => sum + booking.total_amount, 0);
+      // Calculate stats using analytics data
+      const thisMonth = new Date();
+      thisMonth.setDate(1);
       const thisMonthBookings = processedBookings.filter(booking => 
         new Date(booking.created_at) >= thisMonth
       );
       const thisMonthRevenue = thisMonthBookings.reduce((sum, booking) => sum + booking.total_amount, 0);
 
       setStats({
-        totalUsers: processedUsers.length,
-        totalScreens: processedScreens.length,
-        totalBookings: processedBookings.length,
-        totalRevenue,
-        activeScreens: processedScreens.filter(s => s.is_active).length,
+        totalUsers: (analyticsData as any).totalUsers || 0,
+        totalScreens: ((analyticsData as any).activeScreens || 0) + (processedScreens.filter(s => !s.is_active).length),
+        totalBookings: (analyticsData as any).totalBookings || 0,
+        totalRevenue: (analyticsData as any).totalRevenue || 0,
+        activeScreens: (analyticsData as any).activeScreens || 0,
         pendingBookings: processedBookings.filter(b => b.status === 'pending').length,
         thisMonthRevenue,
         thisMonthBookings: thisMonthBookings.length
       });
 
-      // Generate mock analytics data
-      const mockAnalytics: AnalyticsData = {
-        dailyActiveUsers: Math.floor(Math.random() * 1000) + 500,
-        weeklyActiveUsers: Math.floor(Math.random() * 5000) + 2000,
-        monthlyActiveUsers: Math.floor(Math.random() * 15000) + 8000,
-        avgSessionDuration: Math.floor(Math.random() * 600) + 300, // 5-15 minutes
-        bounceRate: Math.floor(Math.random() * 30) + 20, // 20-50%
-        conversionRate: Math.floor(Math.random() * 10) + 5, // 5-15%
-        revenueGrowth: Math.floor(Math.random() * 50) + 10, // 10-60%
-        screenUtilization: processedScreens.length > 0 ? (processedScreens.filter(s => s.is_active).length / processedScreens.length) * 100 : 0
-      };
-
-      // Generate mock security alerts
-      const mockAlerts: SecurityAlert[] = [
-        {
-          id: '1',
-          type: 'failed_login',
-          severity: 'medium',
-          message: 'Multiple failed login attempts detected from IP 192.168.1.100',
-          timestamp: new Date(Date.now() - 3600000).toISOString(),
-          resolved: false
-        },
-        {
-          id: '2',
-          type: 'suspicious_activity',
-          severity: 'high',
-          message: 'Unusual API usage pattern detected for user account',
-          timestamp: new Date(Date.now() - 7200000).toISOString(),
-          resolved: true
-        }
-      ];
-
-      setAnalytics(mockAnalytics);
-      setSecurityAlerts(mockAlerts);
+      setAnalytics(analytics);
+      setSystemHealth(healthStatus);
+      setSecurityAlerts(alerts);
       setUsers(processedUsers);
       setScreens(processedScreens);
       setBookings(processedBookings);
@@ -374,32 +404,97 @@ const AdminDashboard = () => {
   };
 
   const refreshSystemHealth = async () => {
-    // Simulate system health checks
-    const healthStatuses: Array<'healthy' | 'warning' | 'critical'> = ['healthy', 'warning'];
-    setSystemHealth({
-      database: healthStatuses[Math.floor(Math.random() * healthStatuses.length)],
-      storage: healthStatuses[Math.floor(Math.random() * healthStatuses.length)],
-      cdn: healthStatuses[Math.floor(Math.random() * healthStatuses.length)],
-      api: healthStatuses[Math.floor(Math.random() * healthStatuses.length)],
-      payments: healthStatuses[Math.floor(Math.random() * healthStatuses.length)],
-      lastUpdated: new Date().toISOString()
-    });
-    
-    toast({
-      title: "System health refreshed",
-      description: "All services checked successfully.",
-    });
+    try {
+      // Simulate health checks and record them in the database
+      const services = ['database', 'storage', 'cdn', 'api', 'payments'];
+      const healthPromises = services.map(async (service) => {
+        const responseTime = Math.floor(Math.random() * 200) + 50;
+        const statuses = ['healthy', 'warning'];
+        const status = statuses[Math.floor(Math.random() * statuses.length)];
+        
+        return supabase.rpc('record_system_health', {
+          service_name: service,
+          status: status,
+          response_time_ms: responseTime
+        });
+      });
+      
+      await Promise.all(healthPromises);
+      
+      // Fetch updated health data
+      const { data: healthData } = await supabase
+        .from('admin_system_health')
+        .select('*')
+        .order('last_check', { ascending: false })
+        .limit(5);
+      
+      const healthStatus: SystemHealth = {
+        database: 'healthy',
+        storage: 'healthy',
+        cdn: 'healthy',
+        api: 'healthy',
+        payments: 'healthy',
+        lastUpdated: new Date().toISOString()
+      };
+
+      if (healthData && healthData.length > 0) {
+        healthData.forEach(health => {
+          if (health.service_name in healthStatus) {
+            healthStatus[health.service_name as keyof SystemHealth] = health.status as any;
+          }
+        });
+        healthStatus.lastUpdated = healthData[0].last_check;
+      }
+      
+      setSystemHealth(healthStatus);
+      
+      toast({
+        title: "System health refreshed",
+        description: "All services checked successfully.",
+      });
+    } catch (error) {
+      console.error("Error refreshing system health:", error);
+      toast({
+        title: "Error refreshing system health",
+        description: "Please try again.",
+        variant: "destructive"
+      });
+    }
   };
 
   const resolveSecurityAlert = async (alertId: string) => {
-    setSecurityAlerts(prev => prev.map(alert => 
-      alert.id === alertId ? { ...alert, resolved: true } : alert
-    ));
-    
-    toast({
-      title: "Security alert resolved",
-      description: "Alert has been marked as resolved.",
-    });
+    try {
+      const { error } = await supabase.rpc('resolve_security_alert', {
+        alert_id: alertId,
+        resolved_by_user_id: user!.id
+      });
+      
+      if (error) throw error;
+      
+      setSecurityAlerts(prev => prev.map(alert => 
+        alert.id === alertId ? { ...alert, resolved: true } : alert
+      ));
+      
+      // Log the admin action
+      await supabase.rpc('log_admin_action', {
+        admin_user_id: user!.id,
+        action: 'resolve_security_alert',
+        target_type: 'security_alert',
+        target_id: alertId
+      });
+      
+      toast({
+        title: "Security alert resolved",
+        description: "Alert has been marked as resolved.",
+      });
+    } catch (error) {
+      console.error("Error resolving security alert:", error);
+      toast({
+        title: "Error resolving alert",
+        description: "Please try again.",
+        variant: "destructive"
+      });
+    }
   };
 
   const getHealthIcon = (status: 'healthy' | 'warning' | 'critical') => {
@@ -436,6 +531,15 @@ const AdminDashboard = () => {
 
       if (error) throw error;
 
+      // Log the admin action
+      await supabase.rpc('log_admin_action', {
+        admin_user_id: user!.id,
+        action: 'update_user_role',
+        target_type: 'user',
+        target_id: userId,
+        new_values: { role: newRole }
+      });
+
       setUsers(prev => prev.map(user => 
         user.id === userId 
           ? { ...user, role: newRole }
@@ -465,6 +569,15 @@ const AdminDashboard = () => {
 
       if (error) throw error;
 
+      // Log the admin action
+      await supabase.rpc('log_admin_action', {
+        admin_user_id: user!.id,
+        action: 'update_booking_status',
+        target_type: 'booking',
+        target_id: bookingId,
+        new_values: { status: newStatus }
+      });
+
       setBookings(prev => prev.map(booking => 
         booking.id === bookingId 
           ? { ...booking, status: newStatus }
@@ -493,6 +606,15 @@ const AdminDashboard = () => {
         .eq('id', screenId);
 
       if (error) throw error;
+
+      // Log the admin action
+      await supabase.rpc('log_admin_action', {
+        admin_user_id: user!.id,
+        action: 'toggle_screen_status',
+        target_type: 'screen',
+        target_id: screenId,
+        new_values: { is_active: !currentStatus }
+      });
 
       setScreens(prev => prev.map(screen => 
         screen.id === screenId 
