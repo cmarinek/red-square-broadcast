@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
-import { Menu, X, Monitor, Upload, Calendar, CreditCard, User, LogOut } from "lucide-react";
+import { Menu, X, Monitor, Upload, Calendar, CreditCard, User, LogOut, Settings } from "lucide-react";
 import { useAuth } from "@/context/AuthContext";
 import { 
   DropdownMenu,
@@ -31,10 +31,7 @@ export const Navigation = () => {
                   <a href="/discover">Find Screens</a>
                 </Button>
                 <Button variant="outline" asChild>
-                  <a href="/my-campaigns">My Campaigns</a>
-                </Button>
-                <Button variant="outline" asChild>
-                  <a href="/dashboard">My Screens</a>
+                  <a href="/my-campaigns">My Dashboard</a>
                 </Button>
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>
@@ -53,8 +50,14 @@ export const Navigation = () => {
                       </a>
                     </DropdownMenuItem>
                     <DropdownMenuItem asChild>
-                      <a href="/device-setup" className="flex items-center">
+                      <a href="/dashboard" className="flex items-center">
                         <Monitor className="w-4 h-4 mr-2" />
+                        Screen Management
+                      </a>
+                    </DropdownMenuItem>
+                    <DropdownMenuItem asChild>
+                      <a href="/device-setup" className="flex items-center">
+                        <Settings className="w-4 h-4 mr-2" />
                         Device Setup
                       </a>
                     </DropdownMenuItem>
@@ -101,13 +104,13 @@ export const Navigation = () => {
                     <a href="/discover">Find Screens</a>
                   </Button>
                   <Button variant="outline" asChild className="w-full justify-start">
-                    <a href="/my-campaigns">My Campaigns</a>
-                  </Button>
-                  <Button variant="outline" asChild className="w-full justify-start">
-                    <a href="/dashboard">My Screens</a>
+                    <a href="/my-campaigns">My Dashboard</a>
                   </Button>
                   <Button variant="outline" asChild className="w-full justify-start">
                     <a href="/profile">Profile Settings</a>
+                  </Button>
+                  <Button variant="outline" asChild className="w-full justify-start">
+                    <a href="/dashboard">Screen Management</a>
                   </Button>
                   <Button variant="outline" asChild className="w-full justify-start">
                     <a href="/device-setup">Device Setup</a>
