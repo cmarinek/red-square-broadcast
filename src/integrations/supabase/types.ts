@@ -381,6 +381,56 @@ export type Database = {
           },
         ]
       }
+      pricing_analytics: {
+        Row: {
+          average_price: number
+          booking_count: number
+          created_at: string
+          date: string
+          demand_score: number | null
+          hour: number
+          id: string
+          revenue: number
+          screen_id: string
+          suggested_price: number | null
+          updated_at: string
+        }
+        Insert: {
+          average_price?: number
+          booking_count?: number
+          created_at?: string
+          date?: string
+          demand_score?: number | null
+          hour: number
+          id?: string
+          revenue?: number
+          screen_id: string
+          suggested_price?: number | null
+          updated_at?: string
+        }
+        Update: {
+          average_price?: number
+          booking_count?: number
+          created_at?: string
+          date?: string
+          demand_score?: number | null
+          hour?: number
+          id?: string
+          revenue?: number
+          screen_id?: string
+          suggested_price?: number | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "pricing_analytics_screen_id_fkey"
+            columns: ["screen_id"]
+            isOneToOne: false
+            referencedRelation: "screens"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       profiles: {
         Row: {
           avatar_url: string | null
@@ -425,6 +475,56 @@ export type Database = {
           user_id?: string
         }
         Relationships: []
+      }
+      revenue_recommendations: {
+        Row: {
+          confidence_score: number | null
+          created_at: string
+          description: string
+          expires_at: string | null
+          id: string
+          implemented: boolean | null
+          is_active: boolean | null
+          potential_revenue_increase: number | null
+          recommendation_type: string
+          screen_id: string
+          title: string
+        }
+        Insert: {
+          confidence_score?: number | null
+          created_at?: string
+          description: string
+          expires_at?: string | null
+          id?: string
+          implemented?: boolean | null
+          is_active?: boolean | null
+          potential_revenue_increase?: number | null
+          recommendation_type: string
+          screen_id: string
+          title: string
+        }
+        Update: {
+          confidence_score?: number | null
+          created_at?: string
+          description?: string
+          expires_at?: string | null
+          id?: string
+          implemented?: boolean | null
+          is_active?: boolean | null
+          potential_revenue_increase?: number | null
+          recommendation_type?: string
+          screen_id?: string
+          title?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "revenue_recommendations_screen_id_fkey"
+            columns: ["screen_id"]
+            isOneToOne: false
+            referencedRelation: "screens"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       screens: {
         Row: {
@@ -485,6 +585,10 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      calculate_pricing_recommendations: {
+        Args: { target_screen_id?: string }
+        Returns: undefined
+      }
       create_security_alert: {
         Args: {
           alert_type: string
