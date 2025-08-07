@@ -31,10 +31,10 @@ export const Navigation = () => {
                   <a href="/discover">Find Screens</a>
                 </Button>
                 <Button variant="outline" asChild>
-                  <a href="/dashboard">My Screens</a>
+                  <a href="/my-campaigns">My Campaigns</a>
                 </Button>
                 <Button variant="outline" asChild>
-                  <a href="/device-setup">Device Setup</a>
+                  <a href="/dashboard">My Screens</a>
                 </Button>
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>
@@ -45,6 +45,19 @@ export const Navigation = () => {
                   </DropdownMenuTrigger>
                   <DropdownMenuContent align="end">
                     <DropdownMenuLabel>My Account</DropdownMenuLabel>
+                    <DropdownMenuSeparator />
+                    <DropdownMenuItem asChild>
+                      <a href="/profile" className="flex items-center">
+                        <User className="w-4 h-4 mr-2" />
+                        Profile Settings
+                      </a>
+                    </DropdownMenuItem>
+                    <DropdownMenuItem asChild>
+                      <a href="/device-setup" className="flex items-center">
+                        <Monitor className="w-4 h-4 mr-2" />
+                        Device Setup
+                      </a>
+                    </DropdownMenuItem>
                     <DropdownMenuSeparator />
                     <DropdownMenuItem onClick={signOut}>
                       <LogOut className="w-4 h-4 mr-2" />
@@ -88,7 +101,13 @@ export const Navigation = () => {
                     <a href="/discover">Find Screens</a>
                   </Button>
                   <Button variant="outline" asChild className="w-full justify-start">
+                    <a href="/my-campaigns">My Campaigns</a>
+                  </Button>
+                  <Button variant="outline" asChild className="w-full justify-start">
                     <a href="/dashboard">My Screens</a>
+                  </Button>
+                  <Button variant="outline" asChild className="w-full justify-start">
+                    <a href="/profile">Profile Settings</a>
                   </Button>
                   <Button variant="outline" asChild className="w-full justify-start">
                     <a href="/device-setup">Device Setup</a>

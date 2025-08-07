@@ -14,6 +14,8 @@ import ScreenDetails from "./pages/ScreenDetails";
 import ContentUpload from "./pages/ContentUpload";
 import DeviceSetup from "./pages/DeviceSetup";
 import SmartTVApp from "./pages/SmartTVApp";
+import BroadcasterDashboard from "./pages/BroadcasterDashboard";
+import Profile from "./pages/Profile";
 import Scheduling from "./pages/Scheduling";
 import Payment from "./pages/Payment";
 import Confirmation from "./pages/Confirmation";
@@ -33,6 +35,8 @@ const App = () => (
             <Route path="/" element={<Index />} />
             <Route path="/auth" element={<Auth />} />
             <Route path="/dashboard" element={<Dashboard />} />
+            <Route path="/my-campaigns" element={<BroadcasterDashboard />} />
+            <Route path="/profile" element={<Profile />} />
             <Route path="/register-screen" element={<ScreenRegistration />} />
             <Route path="/how-it-works" element={<HowItWorksDetailed />} />
             <Route path="/production-plan" element={<ProductionPlan />} />
