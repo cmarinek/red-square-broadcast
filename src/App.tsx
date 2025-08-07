@@ -11,6 +11,7 @@ import ContentUpload from "./pages/ContentUpload";
 import Scheduling from "./pages/Scheduling";
 import Payment from "./pages/Payment";
 import Confirmation from "./pages/Confirmation";
+import HowItWorksDetailed from "./pages/HowItWorksDetailed";
 
 const queryClient = new QueryClient();
 
@@ -22,6 +23,7 @@ const App = () => (
       <BrowserRouter>
         <Routes>
           <Route path="/" element={<Index />} />
+          <Route path="/how-it-works" element={<HowItWorksDetailed />} />
           <Route path="/discover" element={<ScreenDiscovery />} />
           <Route path="/screen/:screenId" element={<ScreenDetails />} />
           <Route path="/book/:screenId/upload" element={<ContentUpload />} />

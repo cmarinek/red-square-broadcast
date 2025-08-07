@@ -24,8 +24,11 @@ export const Navigation = () => {
             <a href="#how-it-works" className="text-muted-foreground hover:text-foreground transition-colors">
               How It Works
             </a>
-            <a href="#pricing" className="text-muted-foreground hover:text-foreground transition-colors">
-              Pricing
+            <a href="/how-it-works" className="text-muted-foreground hover:text-foreground transition-colors">
+              How It Works (Detailed)
+            </a>
+            <a href="/discover" className="text-muted-foreground hover:text-foreground transition-colors">
+              Discover Screens
             </a>
             <Button variant="outline">Sign In</Button>
             <Button className="bg-gradient-primary hover:shadow-[var(--shadow-red)] transition-all duration-300">
@@ -55,8 +58,11 @@ export const Navigation = () => {
               <a href="#how-it-works" className="text-muted-foreground hover:text-foreground transition-colors">
                 How It Works
               </a>
-              <a href="#pricing" className="text-muted-foreground hover:text-foreground transition-colors">
-                Pricing
+              <a href="/how-it-works" className="text-muted-foreground hover:text-foreground transition-colors">
+                How It Works (Detailed)
+              </a>
+              <a href="/discover" className="text-muted-foreground hover:text-foreground transition-colors">
+                Discover Screens
               </a>
               <div className="flex flex-col space-y-2 pt-4">
                 <Button variant="outline">Sign In</Button>
