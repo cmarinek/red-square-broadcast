@@ -12,6 +12,8 @@ import ScreenRegistration from "./pages/ScreenRegistration";
 import ScreenDiscovery from "./pages/ScreenDiscovery";
 import ScreenDetails from "./pages/ScreenDetails";
 import ContentUpload from "./pages/ContentUpload";
+import DeviceSetup from "./pages/DeviceSetup";
+import SmartTVApp from "./pages/SmartTVApp";
 import Scheduling from "./pages/Scheduling";
 import Payment from "./pages/Payment";
 import Confirmation from "./pages/Confirmation";
@@ -40,6 +42,8 @@ const App = () => (
             <Route path="/book/:screenId/schedule" element={<Scheduling />} />
             <Route path="/book/:screenId/payment" element={<Payment />} />
             <Route path="/confirmation/:bookingId" element={<Confirmation />} />
+            <Route path="/device-setup" element={<DeviceSetup />} />
+            <Route path="/smart-tv" element={<SmartTVApp />} />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
           </Routes>

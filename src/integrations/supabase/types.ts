@@ -107,6 +107,53 @@ export type Database = {
         }
         Relationships: []
       }
+      device_status: {
+        Row: {
+          connection_type: string
+          created_at: string
+          current_content: string | null
+          id: string
+          last_heartbeat: string
+          screen_id: string
+          signal_strength: number | null
+          status: string
+          updated_at: string
+          uptime: number | null
+        }
+        Insert: {
+          connection_type?: string
+          created_at?: string
+          current_content?: string | null
+          id?: string
+          last_heartbeat?: string
+          screen_id: string
+          signal_strength?: number | null
+          status?: string
+          updated_at?: string
+          uptime?: number | null
+        }
+        Update: {
+          connection_type?: string
+          created_at?: string
+          current_content?: string | null
+          id?: string
+          last_heartbeat?: string
+          screen_id?: string
+          signal_strength?: number | null
+          status?: string
+          updated_at?: string
+          uptime?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "device_status_screen_id_fkey"
+            columns: ["screen_id"]
+            isOneToOne: true
+            referencedRelation: "screens"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       notifications: {
         Row: {
           created_at: string
@@ -244,6 +291,7 @@ export type Database = {
           location_lat: number | null
           location_lng: number | null
           owner_id: string | null
+          pairing_code: string | null
           price_per_hour: number | null
           qr_code_url: string | null
           screen_name: string | null
@@ -260,6 +308,7 @@ export type Database = {
           location_lat?: number | null
           location_lng?: number | null
           owner_id?: string | null
+          pairing_code?: string | null
           price_per_hour?: number | null
           qr_code_url?: string | null
           screen_name?: string | null
@@ -276,6 +325,7 @@ export type Database = {
           location_lat?: number | null
           location_lng?: number | null
           owner_id?: string | null
+          pairing_code?: string | null
           price_per_hour?: number | null
           qr_code_url?: string | null
           screen_name?: string | null

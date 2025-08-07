@@ -91,7 +91,7 @@ export function DeviceSetup() {
       
       const { error } = await supabase
         .from('screens')
-        .update({ pairing_code: code })
+        .update({ pairing_code: code } as any)
         .eq('id', screenId);
 
       if (error) throw error;

@@ -75,12 +75,12 @@ export function DeviceMonitoring() {
       const deviceStatuses: DeviceStatus[] = data?.map(screen => ({
         screen_id: screen.id,
         screen_name: screen.screen_name,
-        status: screen.device_status?.[0]?.status || 'offline',
-        last_heartbeat: screen.device_status?.[0]?.last_heartbeat || new Date().toISOString(),
-        connection_type: screen.device_status?.[0]?.connection_type || 'dongle',
-        signal_strength: screen.device_status?.[0]?.signal_strength || 0,
-        current_content: screen.device_status?.[0]?.current_content,
-        uptime: screen.device_status?.[0]?.uptime || 0
+        status: (screen as any).device_status?.[0]?.status || 'offline',
+        last_heartbeat: (screen as any).device_status?.[0]?.last_heartbeat || new Date().toISOString(),
+        connection_type: (screen as any).device_status?.[0]?.connection_type || 'dongle',
+        signal_strength: (screen as any).device_status?.[0]?.signal_strength || 0,
+        current_content: (screen as any).device_status?.[0]?.current_content,
+        uptime: (screen as any).device_status?.[0]?.uptime || 0
       })) || [];
 
       setDevices(deviceStatuses);

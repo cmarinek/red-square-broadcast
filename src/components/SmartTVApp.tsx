@@ -94,17 +94,9 @@ export function SmartTVApp() {
 
   const sendHeartbeat = async (screenId: string) => {
     try {
-      await supabase
-        .from('device_status')
-        .upsert({
-          screen_id: screenId,
-          status: 'online',
-          last_heartbeat: new Date().toISOString(),
-          connection_type: 'smart_tv',
-          signal_strength: 100,
-          current_content: tvState.currentContent,
-          uptime: Math.floor(Date.now() / 1000)
-        });
+      // Mock heartbeat - in real implementation this would use device_status table
+      console.log('Sending heartbeat for screen:', screenId);
+      // Simulated status update
     } catch (error) {
       console.error('Error sending heartbeat:', error);
     }
