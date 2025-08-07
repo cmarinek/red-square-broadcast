@@ -28,6 +28,9 @@ import { Layout } from "@/components/Layout";
 import { useAuth } from "@/context/AuthContext";
 import { RevenueOptimization } from "@/components/screen-owner/RevenueOptimization";
 import { DeviceMonitoring } from "@/components/screen-owner/DeviceMonitoring";
+import { ScreenNetworkManagement } from "@/components/screen-owner/ScreenNetworkManagement";
+import { ContentApprovalWorkflows } from "@/components/screen-owner/ContentApprovalWorkflows";
+import { PayoutManagement } from "@/components/screen-owner/PayoutManagement";
 
 interface ScreenData {
   id: string;
@@ -39,6 +42,8 @@ interface ScreenData {
   revenue_this_month: number;
   occupancy_rate: number;
   status: 'online' | 'offline' | 'maintenance';
+  group_id?: string | null;
+  group_name?: string;
 }
 
 interface DashboardStats {
@@ -118,7 +123,8 @@ const ScreenOwnerDashboard = () => {
           is_active: screen.is_active || false,
           revenue_this_month: revenue,
           occupancy_rate: Math.min(occupancy, 100),
-          status: deviceStatus?.status === 'online' ? 'online' : screen.is_active ? 'offline' : 'maintenance'
+          status: deviceStatus?.status === 'online' ? 'online' : screen.is_active ? 'offline' : 'maintenance',
+          group_id: screen.group_id || null
         };
       }) || [];
 
@@ -279,11 +285,13 @@ const ScreenOwnerDashboard = () => {
 
         {/* Main Content Tabs */}
         <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
-          <TabsList className="grid w-full grid-cols-4">
+          <TabsList className="grid w-full grid-cols-6">
             <TabsTrigger value="overview">Overview</TabsTrigger>
-            <TabsTrigger value="revenue">Revenue Optimization</TabsTrigger>
-            <TabsTrigger value="monitoring">Device Monitoring</TabsTrigger>
-            <TabsTrigger value="analytics">Analytics</TabsTrigger>
+            <TabsTrigger value="revenue">Revenue</TabsTrigger>
+            <TabsTrigger value="monitoring">Monitoring</TabsTrigger>
+            <TabsTrigger value="network">Network</TabsTrigger>
+            <TabsTrigger value="content">Content</TabsTrigger>
+            <TabsTrigger value="payouts">Payouts</TabsTrigger>
           </TabsList>
 
           <TabsContent value="overview" className="space-y-6">
@@ -348,6 +356,18 @@ const ScreenOwnerDashboard = () => {
 
           <TabsContent value="monitoring">
             <DeviceMonitoring screens={screens} />
+          </TabsContent>
+
+          <TabsContent value="network">
+            <ScreenNetworkManagement screens={screens} onRefresh={fetchDashboardData} />
+          </TabsContent>
+
+          <TabsContent value="content">
+            <ContentApprovalWorkflows screens={screens} />
+          </TabsContent>
+
+          <TabsContent value="payouts">
+            <PayoutManagement screens={screens} />
           </TabsContent>
 
           <TabsContent value="analytics" className="space-y-6">

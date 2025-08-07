@@ -224,6 +224,57 @@ export type Database = {
           },
         ]
       }
+      content_moderation: {
+        Row: {
+          automated_flags: Json | null
+          content_id: string
+          created_at: string
+          id: string
+          moderated_by: string | null
+          moderation_reason: string | null
+          screen_id: string
+          status: string
+          updated_at: string
+        }
+        Insert: {
+          automated_flags?: Json | null
+          content_id: string
+          created_at?: string
+          id?: string
+          moderated_by?: string | null
+          moderation_reason?: string | null
+          screen_id: string
+          status?: string
+          updated_at?: string
+        }
+        Update: {
+          automated_flags?: Json | null
+          content_id?: string
+          created_at?: string
+          id?: string
+          moderated_by?: string | null
+          moderation_reason?: string | null
+          screen_id?: string
+          status?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "content_moderation_content_id_fkey"
+            columns: ["content_id"]
+            isOneToOne: false
+            referencedRelation: "content_uploads"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "content_moderation_screen_id_fkey"
+            columns: ["screen_id"]
+            isOneToOne: false
+            referencedRelation: "screens"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       content_uploads: {
         Row: {
           created_at: string
@@ -381,6 +432,48 @@ export type Database = {
           },
         ]
       }
+      payout_requests: {
+        Row: {
+          amount: number
+          currency: string
+          earnings_period_end: string
+          earnings_period_start: string
+          id: string
+          metadata: Json | null
+          processed_at: string | null
+          requested_at: string
+          screen_owner_id: string
+          status: string
+          stripe_payout_id: string | null
+        }
+        Insert: {
+          amount: number
+          currency?: string
+          earnings_period_end: string
+          earnings_period_start: string
+          id?: string
+          metadata?: Json | null
+          processed_at?: string | null
+          requested_at?: string
+          screen_owner_id: string
+          status?: string
+          stripe_payout_id?: string | null
+        }
+        Update: {
+          amount?: number
+          currency?: string
+          earnings_period_end?: string
+          earnings_period_start?: string
+          id?: string
+          metadata?: Json | null
+          processed_at?: string | null
+          requested_at?: string
+          screen_owner_id?: string
+          status?: string
+          stripe_payout_id?: string | null
+        }
+        Relationships: []
+      }
       pricing_analytics: {
         Row: {
           average_price: number
@@ -526,6 +619,33 @@ export type Database = {
           },
         ]
       }
+      screen_groups: {
+        Row: {
+          created_at: string
+          description: string | null
+          group_name: string
+          id: string
+          owner_id: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          description?: string | null
+          group_name: string
+          id?: string
+          owner_id: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          description?: string | null
+          group_name?: string
+          id?: string
+          owner_id?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       screens: {
         Row: {
           address: string | null
@@ -533,6 +653,7 @@ export type Database = {
           availability_start: string | null
           city: string | null
           created_at: string
+          group_id: string | null
           id: string
           is_active: boolean | null
           location_lat: number | null
@@ -550,6 +671,7 @@ export type Database = {
           availability_start?: string | null
           city?: string | null
           created_at?: string
+          group_id?: string | null
           id?: string
           is_active?: boolean | null
           location_lat?: number | null
@@ -567,6 +689,7 @@ export type Database = {
           availability_start?: string | null
           city?: string | null
           created_at?: string
+          group_id?: string | null
           id?: string
           is_active?: boolean | null
           location_lat?: number | null
@@ -578,7 +701,15 @@ export type Database = {
           screen_name?: string | null
           updated_at?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "screens_group_id_fkey"
+            columns: ["group_id"]
+            isOneToOne: false
+            referencedRelation: "screen_groups"
+            referencedColumns: ["id"]
+          },
+        ]
       }
     }
     Views: {
