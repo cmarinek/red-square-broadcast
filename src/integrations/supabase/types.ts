@@ -14,6 +14,153 @@ export type Database = {
   }
   public: {
     Tables: {
+      admin_analytics: {
+        Row: {
+          created_at: string
+          id: string
+          metadata: Json | null
+          metric_date: string
+          metric_name: string
+          metric_value: number
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          metadata?: Json | null
+          metric_date?: string
+          metric_name: string
+          metric_value: number
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          metadata?: Json | null
+          metric_date?: string
+          metric_name?: string
+          metric_value?: number
+        }
+        Relationships: []
+      }
+      admin_audit_logs: {
+        Row: {
+          action: string
+          admin_user_id: string
+          created_at: string
+          id: string
+          ip_address: unknown | null
+          new_values: Json | null
+          old_values: Json | null
+          target_id: string | null
+          target_type: string
+          user_agent: string | null
+        }
+        Insert: {
+          action: string
+          admin_user_id: string
+          created_at?: string
+          id?: string
+          ip_address?: unknown | null
+          new_values?: Json | null
+          old_values?: Json | null
+          target_id?: string | null
+          target_type: string
+          user_agent?: string | null
+        }
+        Update: {
+          action?: string
+          admin_user_id?: string
+          created_at?: string
+          id?: string
+          ip_address?: unknown | null
+          new_values?: Json | null
+          old_values?: Json | null
+          target_id?: string | null
+          target_type?: string
+          user_agent?: string | null
+        }
+        Relationships: []
+      }
+      admin_security_alerts: {
+        Row: {
+          affected_user_id: string | null
+          alert_type: string
+          created_at: string
+          id: string
+          ip_address: unknown | null
+          message: string
+          metadata: Json | null
+          resolved: boolean
+          resolved_at: string | null
+          resolved_by: string | null
+          severity: string
+          title: string
+          user_agent: string | null
+        }
+        Insert: {
+          affected_user_id?: string | null
+          alert_type: string
+          created_at?: string
+          id?: string
+          ip_address?: unknown | null
+          message: string
+          metadata?: Json | null
+          resolved?: boolean
+          resolved_at?: string | null
+          resolved_by?: string | null
+          severity: string
+          title: string
+          user_agent?: string | null
+        }
+        Update: {
+          affected_user_id?: string | null
+          alert_type?: string
+          created_at?: string
+          id?: string
+          ip_address?: unknown | null
+          message?: string
+          metadata?: Json | null
+          resolved?: boolean
+          resolved_at?: string | null
+          resolved_by?: string | null
+          severity?: string
+          title?: string
+          user_agent?: string | null
+        }
+        Relationships: []
+      }
+      admin_system_health: {
+        Row: {
+          created_at: string
+          error_message: string | null
+          id: string
+          last_check: string
+          metadata: Json | null
+          response_time_ms: number | null
+          service_name: string
+          status: string
+        }
+        Insert: {
+          created_at?: string
+          error_message?: string | null
+          id?: string
+          last_check?: string
+          metadata?: Json | null
+          response_time_ms?: number | null
+          service_name: string
+          status: string
+        }
+        Update: {
+          created_at?: string
+          error_message?: string | null
+          id?: string
+          last_check?: string
+          metadata?: Json | null
+          response_time_ms?: number | null
+          service_name?: string
+          status?: string
+        }
+        Relationships: []
+      }
       bookings: {
         Row: {
           content_id: string | null
