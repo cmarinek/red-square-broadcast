@@ -41,6 +41,7 @@ import { AdvancedAnalyticsDashboard } from "@/components/broadcaster/AdvancedAna
 import { ContentSchedulingAutomation } from "@/components/broadcaster/ContentSchedulingAutomation";
 import { AudienceTargeting } from "@/components/broadcaster/AudienceTargeting";
 import { ABTestingTools } from "@/components/broadcaster/ABTestingTools";
+import { MobileAppIntegration } from "@/components/broadcaster/MobileAppIntegration";
 import { format, isAfter, isBefore, addDays } from "date-fns";
 
 interface BookingData {
@@ -419,7 +420,7 @@ const BroadcasterDashboard = () => {
                 <TabsTrigger value="scheduling">Scheduling</TabsTrigger>
                 <TabsTrigger value="targeting">Targeting</TabsTrigger>
                 <TabsTrigger value="testing">A/B Testing</TabsTrigger>
-                <TabsTrigger value="campaigns">Campaigns</TabsTrigger>
+                <TabsTrigger value="mobile">Mobile App</TabsTrigger>
               </TabsList>
             </Tabs>
           </CardHeader>
@@ -441,8 +442,8 @@ const BroadcasterDashboard = () => {
               <TabsContent value="testing" className="mt-6">
                 <ABTestingTools contentUploads={contentUploads} screens={screens} audienceSegments={audienceSegments} />
               </TabsContent>
-              <TabsContent value="campaigns" className="mt-0">
-                {renderCampaignsList(filterBookings(bookings))}
+              <TabsContent value="mobile" className="mt-6">
+                <MobileAppIntegration />
               </TabsContent>
             </Tabs>
           </CardContent>
