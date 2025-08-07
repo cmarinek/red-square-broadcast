@@ -1,8 +1,9 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { Menu, X, Monitor, Upload, Calendar, CreditCard, User, LogOut, Settings } from "lucide-react";
+import { Menu, X, Monitor, Upload, Calendar, CreditCard, User, LogOut, Settings, BarChart3 } from "lucide-react";
 import { useAuth } from "@/context/AuthContext";
+import { useUserRoles } from "@/hooks/useUserRoles";
 import { 
   DropdownMenu,
   DropdownMenuContent,
@@ -14,6 +15,7 @@ import {
 export const Navigation = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const { user, signOut } = useAuth();
+  const { hasScreens, loading: rolesLoading } = useUserRoles();
   return <nav className="fixed top-0 left-0 right-0 z-50 bg-background/80 backdrop-blur-md border-b border-border">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between h-16 items-center">
@@ -34,6 +36,11 @@ export const Navigation = () => {
                 <Button variant="outline" asChild>
                   <Link to="/my-campaigns">My Campaigns</Link>
                 </Button>
+                {hasScreens && (
+                  <Button variant="outline" asChild>
+                    <Link to="/dashboard">My Screens</Link>
+                  </Button>
+                )}
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>
                     <Button variant="ghost" size="sm" className="flex items-center space-x-2">
@@ -50,12 +57,22 @@ export const Navigation = () => {
                         Profile Settings
                       </Link>
                     </DropdownMenuItem>
-                    <DropdownMenuItem asChild>
-                      <Link to="/dashboard" className="flex items-center">
-                        <Monitor className="w-4 h-4 mr-2" />
-                        Screen Management
-                      </Link>
-                    </DropdownMenuItem>
+                    {!hasScreens && (
+                      <DropdownMenuItem asChild>
+                        <Link to="/register-screen" className="flex items-center">
+                          <Monitor className="w-4 h-4 mr-2" />
+                          Register Screen
+                        </Link>
+                      </DropdownMenuItem>
+                    )}
+                    {hasScreens && (
+                      <DropdownMenuItem asChild>
+                        <Link to="/dashboard" className="flex items-center">
+                          <BarChart3 className="w-4 h-4 mr-2" />
+                          Screen Analytics
+                        </Link>
+                      </DropdownMenuItem>
+                    )}
                     <DropdownMenuItem asChild>
                       <Link to="/device-setup" className="flex items-center">
                         <Settings className="w-4 h-4 mr-2" />
@@ -107,12 +124,23 @@ export const Navigation = () => {
                   <Button variant="outline" asChild className="w-full justify-start">
                     <Link to="/my-campaigns">My Campaigns</Link>
                   </Button>
+                  {hasScreens && (
+                    <Button variant="outline" asChild className="w-full justify-start">
+                      <Link to="/dashboard">My Screens</Link>
+                    </Button>
+                  )}
                   <Button variant="outline" asChild className="w-full justify-start">
                     <Link to="/profile">Profile Settings</Link>
                   </Button>
-                  <Button variant="outline" asChild className="w-full justify-start">
-                    <Link to="/dashboard">Screen Management</Link>
-                  </Button>
+                  {!hasScreens ? (
+                    <Button variant="outline" asChild className="w-full justify-start">
+                      <Link to="/register-screen">Register Screen</Link>
+                    </Button>
+                  ) : (
+                    <Button variant="outline" asChild className="w-full justify-start">
+                      <Link to="/dashboard">Screen Analytics</Link>
+                    </Button>
+                  )}
                   <Button variant="outline" asChild className="w-full justify-start">
                     <Link to="/device-setup">Device Setup</Link>
                   </Button>
