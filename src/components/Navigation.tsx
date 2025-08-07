@@ -45,7 +45,7 @@ export const Navigation = () => {
                 {/* Screen Owner features */}
                 {(isScreenOwner() || isAdmin()) && (
                   <Button variant="outline" asChild>
-                    <Link to="/dashboard">Screen Dashboard</Link>
+                    <Link to="/my-screens">My Screens</Link>
                   </Button>
                 )}
                 
@@ -72,9 +72,15 @@ export const Navigation = () => {
                       </Link>
                     </DropdownMenuItem>
                     
-                    {/* Screen Owner specific options */}
+                     {/* Screen Owner specific options */}
                     {(isScreenOwner() || isAdmin()) && (
                       <>
+                        <DropdownMenuItem asChild>
+                          <Link to="/my-screens" className="flex items-center">
+                            <BarChart3 className="w-4 h-4 mr-2" />
+                            My Screens
+                          </Link>
+                        </DropdownMenuItem>
                         <DropdownMenuItem asChild>
                           <Link to="/register-screen" className="flex items-center">
                             <Monitor className="w-4 h-4 mr-2" />
@@ -163,7 +169,7 @@ export const Navigation = () => {
                 {/* Screen Owner features */}
                 {(isScreenOwner() || isAdmin()) && (
                   <Button variant="outline" asChild className="w-full justify-start">
-                    <Link to="/dashboard">Screen Dashboard</Link>
+                    <Link to="/my-screens">My Screens</Link>
                   </Button>
                 )}
                 
