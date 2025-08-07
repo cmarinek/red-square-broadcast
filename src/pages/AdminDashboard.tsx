@@ -62,7 +62,7 @@ interface UserData {
   id: string;
   email: string;
   display_name: string;
-  role: string;
+  role: 'broadcaster' | 'screen_owner' | 'admin';
   created_at: string;
   last_sign_in_at: string;
 }
@@ -144,62 +144,91 @@ const AdminDashboard = () => {
 
       if (usersError) throw usersError;
 
-      // Fetch screens with owner info
-      const { data: screensData, error: screensError } = await supabase
+      // Fetch all screens first
+      const { data: allScreens, error: screensError } = await supabase
         .from('screens')
-        .select(`
-          *,
-          profiles!inner(display_name, user_id),
-          bookings(id)
-        `)
+        .select('*')
         .order('created_at', { ascending: false });
 
       if (screensError) throw screensError;
 
-      // Fetch bookings with user and screen info
-      const { data: bookingsData, error: bookingsError } = await supabase
+      // Get owner info and booking counts separately
+      let processedScreens: ScreenData[] = [];
+      if (allScreens) {
+        processedScreens = await Promise.all(
+          allScreens.map(async (screen) => {
+            const { data: ownerData } = await supabase
+              .from('profiles')
+              .select('display_name, user_id')
+              .eq('user_id', screen.owner_id)
+              .maybeSingle();
+            
+            const { data: bookingData } = await supabase
+              .from('bookings')
+              .select('id')
+              .eq('screen_id', screen.id);
+            
+            return {
+              id: screen.id,
+              screen_name: screen.screen_name || 'Unnamed Screen',
+              owner_email: ownerData?.display_name || 'Unknown Owner',
+              city: screen.city || 'Unknown City',
+              is_active: screen.is_active,
+              price_per_hour: screen.price_per_hour || 0,
+              created_at: screen.created_at,
+              bookings_count: bookingData?.length || 0
+            };
+          })
+        );
+      }
+
+      // Fetch all bookings first
+      const { data: allBookings, error: bookingsError } = await supabase
         .from('bookings')
-        .select(`
-          *,
-          profiles!inner(display_name),
-          screens!inner(screen_name)
-        `)
+        .select('*')
         .order('created_at', { ascending: false });
 
       if (bookingsError) throw bookingsError;
 
+      // Get related user and screen data separately
+      let processedBookings: BookingData[] = [];
+      if (allBookings) {
+        processedBookings = await Promise.all(
+          allBookings.map(async (booking) => {
+            const { data: userData } = await supabase
+              .from('profiles')
+              .select('display_name, user_id')
+              .eq('user_id', booking.user_id)
+              .maybeSingle();
+            
+            const { data: screenData } = await supabase
+              .from('screens')
+              .select('screen_name, id')
+              .eq('id', booking.screen_id)
+              .maybeSingle();
+            
+            return {
+              id: booking.id,
+              user_email: userData?.display_name || 'Unknown User',
+              screen_name: screenData?.screen_name || 'Unknown Screen',
+              scheduled_date: booking.scheduled_date,
+              total_amount: booking.total_amount,
+              status: booking.status,
+              payment_status: booking.payment_status,
+              created_at: booking.created_at
+            };
+          })
+        );
+      }
+
       // Process users data
       const processedUsers: UserData[] = usersData?.map(user => ({
         id: user.user_id,
-        email: user.user_id, // We'd need to get this from auth if needed
-        display_name: user.display_name || 'Unknown',
-        role: user.role,
+        email: user.user_id.slice(0, 8) + '...', // Shortened ID as email placeholder
+        display_name: user.display_name || 'Unknown User',
+        role: user.role as 'broadcaster' | 'screen_owner' | 'admin',
         created_at: user.created_at,
         last_sign_in_at: user.created_at // Placeholder
-      })) || [];
-
-      // Process screens data
-      const processedScreens: ScreenData[] = screensData?.map(screen => ({
-        id: screen.id,
-        screen_name: screen.screen_name || 'Unnamed Screen',
-        owner_email: (screen as any).profiles?.display_name || 'Unknown',
-        city: screen.city || 'Unknown',
-        is_active: screen.is_active,
-        price_per_hour: screen.price_per_hour || 0,
-        created_at: screen.created_at,
-        bookings_count: (screen as any).bookings?.length || 0
-      })) || [];
-
-      // Process bookings data
-      const processedBookings: BookingData[] = bookingsData?.map(booking => ({
-        id: booking.id,
-        user_email: (booking as any).profiles?.display_name || 'Unknown',
-        screen_name: (booking as any).screens?.screen_name || 'Unknown',
-        scheduled_date: booking.scheduled_date,
-        total_amount: booking.total_amount,
-        status: booking.status,
-        payment_status: booking.payment_status,
-        created_at: booking.created_at
       })) || [];
 
       // Calculate stats
@@ -238,6 +267,64 @@ const AdminDashboard = () => {
     }
   };
 
+  const updateUserRole = async (userId: string, newRole: 'broadcaster' | 'screen_owner' | 'admin') => {
+    try {
+      const { error } = await supabase
+        .from('profiles')
+        .update({ role: newRole })
+        .eq('user_id', userId);
+
+      if (error) throw error;
+
+      setUsers(prev => prev.map(user => 
+        user.id === userId 
+          ? { ...user, role: newRole }
+          : user
+      ));
+
+      toast({
+        title: "User role updated",
+        description: `User role changed to ${newRole}`,
+      });
+    } catch (error) {
+      console.error("Error updating user role:", error);
+      toast({
+        title: "Error updating user role",
+        description: "Please try again.",
+        variant: "destructive"
+      });
+    }
+  };
+
+  const updateBookingStatus = async (bookingId: string, newStatus: string) => {
+    try {
+      const { error } = await supabase
+        .from('bookings')
+        .update({ status: newStatus })
+        .eq('id', bookingId);
+
+      if (error) throw error;
+
+      setBookings(prev => prev.map(booking => 
+        booking.id === bookingId 
+          ? { ...booking, status: newStatus }
+          : booking
+      ));
+
+      toast({
+        title: "Booking status updated",
+        description: `Booking ${newStatus}`,
+      });
+    } catch (error) {
+      console.error("Error updating booking:", error);
+      toast({
+        title: "Error updating booking",
+        description: "Please try again.",
+        variant: "destructive"
+      });
+    }
+  };
+
   const toggleScreenStatus = async (screenId: string, currentStatus: boolean) => {
     try {
       const { error } = await supabase
@@ -266,6 +353,23 @@ const AdminDashboard = () => {
       });
     }
   };
+
+  const filteredUsers = users.filter(user =>
+    user.display_name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    user.role.toLowerCase().includes(searchQuery.toLowerCase())
+  );
+
+  const filteredScreens = screens.filter(screen =>
+    screen.screen_name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    screen.city.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    screen.owner_email.toLowerCase().includes(searchQuery.toLowerCase())
+  );
+
+  const filteredBookings = bookings.filter(booking =>
+    booking.user_email.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    booking.screen_name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    booking.status.toLowerCase().includes(searchQuery.toLowerCase())
+  );
 
   if (loading || rolesLoading) {
     return (
@@ -469,12 +573,12 @@ const AdminDashboard = () => {
                       </TableRow>
                     </TableHeader>
                     <TableBody>
-                      {users.slice(0, 10).map((user) => (
+                      {filteredUsers.slice(0, 10).map((user) => (
                         <TableRow key={user.id}>
                           <TableCell>
                             <div>
                               <div className="font-medium">{user.display_name}</div>
-                              <div className="text-sm text-muted-foreground">{user.id.slice(0, 8)}...</div>
+                              <div className="text-sm text-muted-foreground">{user.email}</div>
                             </div>
                           </TableCell>
                           <TableCell>
@@ -493,13 +597,14 @@ const AdminDashboard = () => {
                                 </Button>
                               </DropdownMenuTrigger>
                               <DropdownMenuContent>
-                                <DropdownMenuItem>
-                                  <Eye className="h-4 w-4 mr-2" />
-                                  View Details
+                                <DropdownMenuItem onClick={() => updateUserRole(user.id, 'broadcaster')}>
+                                  Set as Broadcaster
                                 </DropdownMenuItem>
-                                <DropdownMenuItem>
-                                  <Ban className="h-4 w-4 mr-2" />
-                                  Suspend User
+                                <DropdownMenuItem onClick={() => updateUserRole(user.id, 'screen_owner')}>
+                                  Set as Screen Owner
+                                </DropdownMenuItem>
+                                <DropdownMenuItem onClick={() => updateUserRole(user.id, 'admin')}>
+                                  Set as Admin
                                 </DropdownMenuItem>
                               </DropdownMenuContent>
                             </DropdownMenu>
@@ -525,7 +630,7 @@ const AdminDashboard = () => {
                       </TableRow>
                     </TableHeader>
                     <TableBody>
-                      {screens.slice(0, 10).map((screen) => (
+                      {filteredScreens.slice(0, 10).map((screen) => (
                         <TableRow key={screen.id}>
                           <TableCell>
                             <div>
@@ -595,7 +700,7 @@ const AdminDashboard = () => {
                       </TableRow>
                     </TableHeader>
                     <TableBody>
-                      {bookings.slice(0, 10).map((booking) => (
+                      {filteredBookings.slice(0, 10).map((booking) => (
                         <TableRow key={booking.id}>
                           <TableCell>{booking.user_email}</TableCell>
                           <TableCell>{booking.screen_name}</TableCell>
@@ -626,13 +731,17 @@ const AdminDashboard = () => {
                                 </Button>
                               </DropdownMenuTrigger>
                               <DropdownMenuContent>
+                                <DropdownMenuItem onClick={() => updateBookingStatus(booking.id, 'confirmed')}>
+                                  <CheckCircle className="h-4 w-4 mr-2" />
+                                  Approve
+                                </DropdownMenuItem>
+                                <DropdownMenuItem onClick={() => updateBookingStatus(booking.id, 'cancelled')}>
+                                  <XCircle className="h-4 w-4 mr-2" />
+                                  Cancel
+                                </DropdownMenuItem>
                                 <DropdownMenuItem>
                                   <Eye className="h-4 w-4 mr-2" />
                                   View Details
-                                </DropdownMenuItem>
-                                <DropdownMenuItem>
-                                  <FileText className="h-4 w-4 mr-2" />
-                                  Export
                                 </DropdownMenuItem>
                               </DropdownMenuContent>
                             </DropdownMenu>
