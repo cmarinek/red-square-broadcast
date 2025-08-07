@@ -18,8 +18,8 @@ export const Navigation = () => {
             <a href="#features" className="text-muted-foreground hover:text-foreground transition-colors">
               Features
             </a>
-            <a href="#how-it-works" className="text-muted-foreground hover:text-foreground transition-colors">
-              How It Works
+            <a href="/production-plan" className="text-muted-foreground hover:text-foreground transition-colors">
+              Dev Plan
             </a>
             <a href="/how-it-works" className="text-muted-foreground hover:text-foreground transition-colors">
               How It Works (Detailed)
