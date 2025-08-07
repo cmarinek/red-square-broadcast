@@ -14,6 +14,139 @@ export type Database = {
   }
   public: {
     Tables: {
+      ab_test_results: {
+        Row: {
+          clicks: number | null
+          conversions: number | null
+          cost: number | null
+          created_at: string
+          date: string
+          id: string
+          screen_id: string | null
+          test_id: string | null
+          variant: string
+          views: number | null
+        }
+        Insert: {
+          clicks?: number | null
+          conversions?: number | null
+          cost?: number | null
+          created_at?: string
+          date?: string
+          id?: string
+          screen_id?: string | null
+          test_id?: string | null
+          variant: string
+          views?: number | null
+        }
+        Update: {
+          clicks?: number | null
+          conversions?: number | null
+          cost?: number | null
+          created_at?: string
+          date?: string
+          id?: string
+          screen_id?: string | null
+          test_id?: string | null
+          variant?: string
+          views?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "ab_test_results_screen_id_fkey"
+            columns: ["screen_id"]
+            isOneToOne: false
+            referencedRelation: "screens"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "ab_test_results_test_id_fkey"
+            columns: ["test_id"]
+            isOneToOne: false
+            referencedRelation: "ab_tests"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      ab_tests: {
+        Row: {
+          confidence_level: number | null
+          created_at: string
+          description: string | null
+          end_date: string
+          id: string
+          start_date: string
+          status: string | null
+          target_audience: string | null
+          test_name: string
+          test_screens: string[] | null
+          traffic_split: number | null
+          updated_at: string
+          user_id: string
+          variant_a_content: string | null
+          variant_b_content: string | null
+          winner_variant: string | null
+        }
+        Insert: {
+          confidence_level?: number | null
+          created_at?: string
+          description?: string | null
+          end_date: string
+          id?: string
+          start_date: string
+          status?: string | null
+          target_audience?: string | null
+          test_name: string
+          test_screens?: string[] | null
+          traffic_split?: number | null
+          updated_at?: string
+          user_id: string
+          variant_a_content?: string | null
+          variant_b_content?: string | null
+          winner_variant?: string | null
+        }
+        Update: {
+          confidence_level?: number | null
+          created_at?: string
+          description?: string | null
+          end_date?: string
+          id?: string
+          start_date?: string
+          status?: string | null
+          target_audience?: string | null
+          test_name?: string
+          test_screens?: string[] | null
+          traffic_split?: number | null
+          updated_at?: string
+          user_id?: string
+          variant_a_content?: string | null
+          variant_b_content?: string | null
+          winner_variant?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "ab_tests_target_audience_fkey"
+            columns: ["target_audience"]
+            isOneToOne: false
+            referencedRelation: "audience_segments"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "ab_tests_variant_a_content_fkey"
+            columns: ["variant_a_content"]
+            isOneToOne: false
+            referencedRelation: "content_uploads"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "ab_tests_variant_b_content_fkey"
+            columns: ["variant_b_content"]
+            isOneToOne: false
+            referencedRelation: "content_uploads"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       admin_analytics: {
         Row: {
           created_at: string
@@ -161,6 +294,42 @@ export type Database = {
         }
         Relationships: []
       }
+      audience_segments: {
+        Row: {
+          created_at: string
+          criteria: Json
+          description: string | null
+          estimated_reach: number | null
+          id: string
+          screen_match_count: number | null
+          segment_name: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          criteria?: Json
+          description?: string | null
+          estimated_reach?: number | null
+          id?: string
+          screen_match_count?: number | null
+          segment_name: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          criteria?: Json
+          description?: string | null
+          estimated_reach?: number | null
+          id?: string
+          screen_match_count?: number | null
+          segment_name?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       bookings: {
         Row: {
           content_id: string | null
@@ -224,6 +393,102 @@ export type Database = {
           },
         ]
       }
+      broadcast_analytics: {
+        Row: {
+          booking_id: string | null
+          click_through_rate: number | null
+          conversion_rate: number | null
+          created_at: string
+          date: string
+          engagement_rate: number | null
+          hour: number
+          id: string
+          impressions: number | null
+          screen_id: string | null
+          updated_at: string
+          user_id: string
+          views: number | null
+        }
+        Insert: {
+          booking_id?: string | null
+          click_through_rate?: number | null
+          conversion_rate?: number | null
+          created_at?: string
+          date?: string
+          engagement_rate?: number | null
+          hour?: number
+          id?: string
+          impressions?: number | null
+          screen_id?: string | null
+          updated_at?: string
+          user_id: string
+          views?: number | null
+        }
+        Update: {
+          booking_id?: string | null
+          click_through_rate?: number | null
+          conversion_rate?: number | null
+          created_at?: string
+          date?: string
+          engagement_rate?: number | null
+          hour?: number
+          id?: string
+          impressions?: number | null
+          screen_id?: string | null
+          updated_at?: string
+          user_id?: string
+          views?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "broadcast_analytics_booking_id_fkey"
+            columns: ["booking_id"]
+            isOneToOne: false
+            referencedRelation: "bookings"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "broadcast_analytics_screen_id_fkey"
+            columns: ["screen_id"]
+            isOneToOne: false
+            referencedRelation: "screens"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      broadcast_notifications: {
+        Row: {
+          created_at: string
+          data: Json | null
+          id: string
+          message: string
+          read: boolean | null
+          title: string
+          type: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          data?: Json | null
+          id?: string
+          message: string
+          read?: boolean | null
+          title: string
+          type: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          data?: Json | null
+          id?: string
+          message?: string
+          read?: boolean | null
+          title?: string
+          type?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       content_moderation: {
         Row: {
           automated_flags: Json | null
@@ -271,6 +536,65 @@ export type Database = {
             columns: ["screen_id"]
             isOneToOne: false
             referencedRelation: "screens"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      content_schedules: {
+        Row: {
+          auto_book: boolean | null
+          budget_limit: number | null
+          content_id: string | null
+          created_at: string
+          end_date: string | null
+          id: string
+          repeat_pattern: string | null
+          schedule_name: string
+          start_date: string
+          status: string | null
+          target_screens: string[] | null
+          time_slots: Json
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          auto_book?: boolean | null
+          budget_limit?: number | null
+          content_id?: string | null
+          created_at?: string
+          end_date?: string | null
+          id?: string
+          repeat_pattern?: string | null
+          schedule_name: string
+          start_date: string
+          status?: string | null
+          target_screens?: string[] | null
+          time_slots?: Json
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          auto_book?: boolean | null
+          budget_limit?: number | null
+          content_id?: string | null
+          created_at?: string
+          end_date?: string | null
+          id?: string
+          repeat_pattern?: string | null
+          schedule_name?: string
+          start_date?: string
+          status?: string | null
+          target_screens?: string[] | null
+          time_slots?: Json
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "content_schedules_content_id_fkey"
+            columns: ["content_id"]
+            isOneToOne: false
+            referencedRelation: "content_uploads"
             referencedColumns: ["id"]
           },
         ]
