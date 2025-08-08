@@ -2,6 +2,7 @@ import { Layout } from "@/components/Layout";
 import { Hero } from "@/components/Hero";
 import { Features } from "@/components/Features";
 import { HowItWorks } from "@/components/HowItWorks";
+import { miniHowItWorks } from "@/components/miniHowItWorks";
 import { Dashboard } from "@/components/Dashboard";
 import { Footer } from "@/components/Footer";
 
