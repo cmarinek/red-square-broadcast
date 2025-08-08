@@ -4,7 +4,8 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { UploadCloud, QrCode, MapPin, Monitor, ShieldCheck, Clock, CreditCard } from "lucide-react";
 import heroImage from "@/assets/hero-redsquare.jpg";
-
+export const miniHowItWorks = () => {
+  return (
 <section className="bg-muted/30 border-y border-border">
           <div className="container py-16 md:py-24">
             <Tabs defaultValue="broadcasters" className="w-full">
@@ -50,3 +51,4 @@ import heroImage from "@/assets/hero-redsquare.jpg";
             </Tabs>
           </div>
         </section>
+            );
