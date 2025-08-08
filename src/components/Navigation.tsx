@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Menu, X, Monitor, Upload, Calendar, CreditCard, User, LogOut, Settings, BarChart3, Shield } from "lucide-react";
 import { useAuth } from "@/context/AuthContext";
 import { useUserRoles } from "@/hooks/useUserRoles";
+import { RealTimeNotifications } from "@/components/RealTimeNotifications";
 import { 
   DropdownMenu,
   DropdownMenuContent,
@@ -55,6 +56,9 @@ export const Navigation = () => {
                     <Link to="/admin">Admin Dashboard</Link>
                   </Button>
                 )}
+                
+                <RealTimeNotifications />
+                
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>
                     <Button variant="ghost" size="sm" className="flex items-center space-x-2">

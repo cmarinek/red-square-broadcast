@@ -44,6 +44,7 @@ import {
   Info,
   CheckSquare
 } from "lucide-react";
+import { AdminSystemHealth } from "@/components/admin/AdminSystemHealth";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -1091,40 +1092,7 @@ const AdminDashboard = () => {
                 </div>
               </TabsContent>
               <TabsContent value="system" className="mt-0 p-6">
-                <div className="space-y-6">
-                  <div className="flex items-center justify-between">
-                    <h3 className="text-lg font-semibold">System Health Monitor</h3>
-                    <Button onClick={refreshSystemHealth} variant="outline" size="sm">
-                      <RefreshCw className="h-4 w-4 mr-2" />
-                      Refresh
-                    </Button>
-                  </div>
-                  
-                  <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-                    {Object.entries(systemHealth).filter(([key]) => key !== 'lastUpdated').map(([service, status]) => (
-                      <Card key={service} className={`border ${getHealthColor(status as any)}`}>
-                        <CardContent className="p-4">
-                          <div className="flex items-center justify-between">
-                            <div className="flex items-center gap-2">
-                              {service === 'database' && <Database className="h-5 w-5" />}
-                              {service === 'storage' && <HardDrive className="h-5 w-5" />}
-                              {service === 'cdn' && <Globe className="h-5 w-5" />}
-                              {service === 'api' && <Server className="h-5 w-5" />}
-                              {service === 'payments' && <CreditCard className="h-5 w-5" />}
-                              <span className="font-medium capitalize">{service}</span>
-                            </div>
-                            {getHealthIcon(status as any)}
-                          </div>
-                          <div className="mt-2 text-sm capitalize">{status}</div>
-                        </CardContent>
-                      </Card>
-                    ))}
-                  </div>
-                  
-                  <div className="text-sm text-muted-foreground">
-                    Last updated: {new Date(systemHealth.lastUpdated).toLocaleString()}
-                  </div>
-                </div>
+                <AdminSystemHealth />
               </TabsContent>
 
               <TabsContent value="security" className="mt-0 p-6">
