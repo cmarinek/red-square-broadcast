@@ -42,7 +42,7 @@ export const Features = () => {
               Modern Broadcasting
             </span>
           </h2>
-          <p className="text-xl max-w-3xl mx-auto text-red-600">Upload content, schedule broadcasts, and monetize digital displays worldwide with RedSquare.</p>
+          <p className="text-xl max-w-3xl mx-auto text-slate-50">Upload content, schedule broadcasts, and monetize digital displays worldwide with RedSquare.</p>
         </div>
 
         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
