@@ -854,6 +854,8 @@ export type Database = {
           bio: string | null
           created_at: string
           display_name: string | null
+          has_completed_broadcaster_onboarding: boolean | null
+          has_completed_screen_owner_onboarding: boolean | null
           id: string
           payout_enabled: boolean | null
           phone: string | null
@@ -868,6 +870,8 @@ export type Database = {
           bio?: string | null
           created_at?: string
           display_name?: string | null
+          has_completed_broadcaster_onboarding?: boolean | null
+          has_completed_screen_owner_onboarding?: boolean | null
           id?: string
           payout_enabled?: boolean | null
           phone?: string | null
@@ -882,6 +886,8 @@ export type Database = {
           bio?: string | null
           created_at?: string
           display_name?: string | null
+          has_completed_broadcaster_onboarding?: boolean | null
+          has_completed_screen_owner_onboarding?: boolean | null
           id?: string
           payout_enabled?: boolean | null
           phone?: string | null

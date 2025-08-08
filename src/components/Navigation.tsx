@@ -1,10 +1,13 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { Menu, X, Monitor, Upload, Calendar, CreditCard, User, LogOut, Settings, BarChart3, Shield } from "lucide-react";
+import { Menu, X, Monitor, Upload, Calendar, CreditCard, User, LogOut, Settings, BarChart3, Shield, HelpCircle } from "lucide-react";
 import { useAuth } from "@/context/AuthContext";
 import { useUserRoles } from "@/hooks/useUserRoles";
+import { useOnboarding } from "@/hooks/useOnboarding";
 import { RealTimeNotifications } from "@/components/RealTimeNotifications";
+import { BroadcasterOnboarding } from "@/components/onboarding/BroadcasterOnboarding";
+import { ScreenOwnerOnboarding } from "@/components/onboarding/ScreenOwnerOnboarding";
 import { 
   DropdownMenu,
   DropdownMenuContent,
@@ -15,9 +18,18 @@ import {
 } from "@/components/ui/dropdown-menu";
 export const Navigation = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [showBroadcasterOnboarding, setShowBroadcasterOnboarding] = useState(false);
+  const [showScreenOwnerOnboarding, setShowScreenOwnerOnboarding] = useState(false);
   const { user, signOut } = useAuth();
   const { isBroadcaster, isScreenOwner, isAdmin, loading: rolesLoading } = useUserRoles();
-  return <nav className="fixed top-0 left-0 right-0 z-50 bg-background/80 backdrop-blur-md border-b border-border">
+  const { 
+    shouldShowBroadcasterOnboarding, 
+    shouldShowScreenOwnerOnboarding,
+    markBroadcasterOnboardingComplete,
+    markScreenOwnerOnboardingComplete 
+  } = useOnboarding();
+  return <>
+    <nav className="fixed top-0 left-0 right-0 z-50 bg-background/80 backdrop-blur-md border-b border-border">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between h-16 items-center">
           <div className="flex items-center space-x-2">
@@ -119,6 +131,15 @@ export const Navigation = () => {
                         </Link>
                       </DropdownMenuItem>
                     )}
+                    <DropdownMenuSeparator />
+                    <DropdownMenuItem onClick={() => setShowBroadcasterOnboarding(true)}>
+                      <HelpCircle className="w-4 h-4 mr-2" />
+                      Broadcaster Guide
+                    </DropdownMenuItem>
+                    <DropdownMenuItem onClick={() => setShowScreenOwnerOnboarding(true)}>
+                      <HelpCircle className="w-4 h-4 mr-2" />
+                      Screen Owner Guide
+                    </DropdownMenuItem>
                     <DropdownMenuSeparator />
                     <DropdownMenuItem onClick={signOut}>
                       <LogOut className="w-4 h-4 mr-2" />
@@ -230,5 +251,19 @@ export const Navigation = () => {
             </div>
           </div>}
       </div>
-    </nav>;
+    </nav>
+    
+    {/* Onboarding Modals */}
+    <BroadcasterOnboarding
+      isOpen={showBroadcasterOnboarding || shouldShowBroadcasterOnboarding()}
+      onClose={() => setShowBroadcasterOnboarding(false)}
+      onComplete={markBroadcasterOnboardingComplete}
+    />
+    
+    <ScreenOwnerOnboarding
+      isOpen={showScreenOwnerOnboarding || shouldShowScreenOwnerOnboarding()}
+      onClose={() => setShowScreenOwnerOnboarding(false)}
+      onComplete={markScreenOwnerOnboardingComplete}
+    />
+  </>;
 };
