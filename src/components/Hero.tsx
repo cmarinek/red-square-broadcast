@@ -22,7 +22,8 @@ export const Hero = () => {
               <span className="bg-gradient-primary bg-clip-text text-transparent">for everyone</span>
             </h1>
             
-            <p className="text-xl text-muted-foreground mb-8 max-w-lg">Connect screen owners with advertisers. Upload content, schedule broadcasts, and monetize digital displays worldwide with RedSquare Broadcast.</p>
+            <p className="text-xl text-muted-foreground mb-8 max-w-lg">Red Square lets anyone book a time slot and broadcast ready-made media to a specific screen. Upload from mobile or desktop. Owners earn while audiences engage.
+Upload content, schedule broadcasts, and monetize digital displays worldwide with RedSquare.</p>
 
             <div className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start mb-12">
               <Button size="lg" className="bg-gradient-primary hover:shadow-[var(--shadow-red)] transition-all duration-300 animate-glow-pulse">
