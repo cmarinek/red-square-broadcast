@@ -77,9 +77,6 @@ describe('Auth Page Integration Test', () => {
     // Simulate form submission
     await user.click(signInButton);
 
-    // Click the button to trigger the async action
-    await user.click(signInButton);
-
     // After clicking, wait for the UI to update to the loading state
     await waitFor(() => {
       expect(screen.getByRole('button', { name: /sign in/i })).toBeDisabled();
