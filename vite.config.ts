@@ -10,9 +10,7 @@ export default defineConfig(({ mode }) => ({
   server: {
     host: true,
     port: 8080,
-    watch: {
-      ignored: ['**/vite.config.ts'],
-    },
+    // watch: {} // Removed 'ignored' to allow config changes to trigger restarts
   },
   plugins: [
     react(),
